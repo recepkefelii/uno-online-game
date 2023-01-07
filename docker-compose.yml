@@ -1,0 +1,18 @@
+version: '3.8'
+services:
+  dev-db: 
+    image: postgres:latest
+    ports: 
+    - 5431:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: nest-js
+    networks:
+      - uno
+
+networks:
+  uno: 
+
+
+

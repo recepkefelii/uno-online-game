@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany, Unique } from 'typeorm';
 import { Game } from './game.entity';
 import { Card } from './card.entity';
 import { Move } from './move.entity';
@@ -8,7 +8,7 @@ export class Player {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({unique: true})
   name: string;
 
   @ManyToOne(type => Game, game => game.players)

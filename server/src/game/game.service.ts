@@ -13,7 +13,7 @@ export class GameService {
     private readonly gameRepository: Repository<Game>,
     @InjectRepository(Player)
     private readonly playerRepository: Repository<Player>
-  ) {}
+  ) { }
 
   async createGame(body: createGameDto) {
     const game = new Game();
@@ -24,7 +24,43 @@ export class GameService {
     return this.gameRepository.save(game);
   }
 
-  async joinGame(body:joinGameDto){
+  async joinGame(body: joinGameDto) {
+    const gameId = body.gameId
+    const playerId = body.playerId
 
+    const game = await this.gameRepository.findOne({
+      where: {
+        id: gameId
+      },
+      relations: ['players']
+    })
+    console.log(game);
+    
+    
+    const player = await this.playerRepository.findOne({
+      where: {
+        id:playerId
+      }
+    });
+    console.log(player);
+    
+
+    if (!player) {
+      return { error: 'Player not found' };
+    }
+
+    if (!game) {
+      return {error: 'Game not found'}
+    }
+
+    if (game.currentPlayers >= game.maxPlayers) {
+      return { error: 'Game is full' };
+    }
+
+    game.players.push(player)
+    game.currentPlayers += 1;
+
+    await this.gameRepository.save(game)
+    return { message: 'Successfully joined game' };
   }
 }

@@ -1,8 +1,9 @@
 import { MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer  } from '@nestjs/websockets';
 import { GameService } from './game.service';
-import { gameDto } from './dto/create.game-dto';
+import { createGameDto } from './dto/create.game-dto';
 import { OnModuleInit } from '@nestjs/common';
 import { Server } from 'socket.io';
+import { joinGameDto } from './dto/join.game-dto';
 @WebSocketGateway()
 export class GameGateway implements OnModuleInit {
     @WebSocketServer()
@@ -16,7 +17,12 @@ export class GameGateway implements OnModuleInit {
     }
 
     @SubscribeMessage('newGame')
-    onNewGame(@MessageBody() body:gameDto){
+    onNewGame(@MessageBody() body:createGameDto){
         return this.gameService.createGame(body)
+    }
+
+    @SubscribeMessage('joinGame')
+    onJoinGame(@MessageBody() body:joinGameDto){
+        return this.gameService.joinGame(body)
     }
 }

@@ -1,5 +1,5 @@
 import { IsString,IsNumber } from 'class-validator';
-export class gameDto {
+export class createGameDto {
     @IsString()
     name:string
     @IsString()

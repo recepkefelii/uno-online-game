@@ -8,5 +8,6 @@ export const ormConfig:TypeOrmModuleOptions = {
     password: '123',
     database: 'nest-js',
     entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-    synchronize: true,
+    migrations: ['dist/**/*.entity.js'],
+    synchronize: true
   }

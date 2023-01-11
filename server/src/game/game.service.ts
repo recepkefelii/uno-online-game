@@ -15,18 +15,18 @@ export class GameService {
     private readonly playerRepository: Repository<Player>
   ) { }
 
-  async createGame(body: createGameDto) {
+  async createGame(body: createGameDto,) {
     const game = new Game();
     game.name = body.name;
     game.maxPlayers = body.maxPlayers;
     game.currentPlayers = 0;
+    this.gameRepository.save(game);
 
-    return this.gameRepository.save(game);
+    return this.gameRepository.find()
   }
 
-  async joinGame(body: joinGameDto) {
+  async joinGame(body: joinGameDto,username:any) {
     const gameId = body.gameId
-    const playerId = body.playerId
 
     const game = await this.gameRepository.findOne({
       where: {
@@ -34,12 +34,18 @@ export class GameService {
       },
       relations: ['players']
     })
-    console.log(game);
-    
+
+    const findByUsername = await this.playerRepository.findOne(
+      {
+        where: {
+          name: username
+        }
+      }
+    )
     
     const player = await this.playerRepository.findOne({
       where: {
-        id:playerId
+        id:findByUsername.id
       }
     });
     console.log(player);

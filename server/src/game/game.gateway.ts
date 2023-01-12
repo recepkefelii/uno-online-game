@@ -31,33 +31,39 @@ export class GameGateway implements OnModuleInit {
         }
       })
 
-      if (player.hash !== hash) {
-        console.log({ errorMessage: 'Invalid hash provided' });
-        socket.disconnect();
-      }
-
       if (!player) {
         console.log({ errorMessage: "Could not find player with name " + username });
-        socket.disconnect();
+        return socket.disconnect();
       }
+
+      if (player.hash !== hash) {
+        console.log({ errorMessage: 'Invalid hash provided' });
+        return socket.disconnect();
+      }
+
       
+
     });
   }
 
-
   @SubscribeMessage('newGame')
-  async onNewGame(@MessageBody() body: createGameDto) {
+  async onNewGame(@MessageBody() body: createGameDto, @ConnectedSocket() socket) {
+    const ownerPlayer = socket.handshake.query.username 
+    const newGame = await this.gameService.createGame(body,ownerPlayer)
 
-    const newGame = await this.gameService.createGame(body)
-    
-    this.server.emit('onNewGame',{
+    this.server.emit('onNewGame', {
       newGame
     })
+
     return newGame
   }
 
   @SubscribeMessage('joinGame')
-  onJoinGame(@MessageBody() body: joinGameDto, @ConnectedSocket() socket:any) {
-    return this.gameService.joinGame(body,socket)
+  async onJoinGame(@MessageBody() body: joinGameDto, @ConnectedSocket() socket: any) {
+    const join = await this.gameService.joinGame(body, socket)
+    this.server.emit('onJoinGame', {
+      join
+    })
+    return join
   }
 }

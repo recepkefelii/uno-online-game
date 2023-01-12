@@ -15,11 +15,17 @@ export class GameService {
     private readonly playerRepository: Repository<Player>
   ) { }
 
-  async createGame(body: createGameDto,) {
+  async createGame(body: createGameDto,ownerPlayer:any) {
+    const owner = await this.playerRepository.findOne({
+      where: {
+        name: ownerPlayer
+      }
+    })
     const game = new Game();
     game.name = body.name;
     game.maxPlayers = body.maxPlayers;
-    game.currentPlayers = 0;
+    game.currentPlayers = 1;
+    game.players.push(owner)
     this.gameRepository.save(game);
 
     return this.gameRepository.find()
@@ -27,7 +33,6 @@ export class GameService {
 
   async joinGame(body: joinGameDto,username:any) {
     const gameId = body.gameId
-
     const game = await this.gameRepository.findOne({
       where: {
         id: gameId
@@ -38,7 +43,7 @@ export class GameService {
     const findByUsername = await this.playerRepository.findOne(
       {
         where: {
-          name: username
+          name: username.handshake.query.username
         }
       }
     )
@@ -48,7 +53,6 @@ export class GameService {
         id:findByUsername.id
       }
     });
-    console.log(player);
     
 
     if (!player) {
@@ -62,11 +66,13 @@ export class GameService {
     if (game.currentPlayers >= game.maxPlayers) {
       return { error: 'Game is full' };
     }
-
+    
     game.players.push(player)
     game.currentPlayers += 1;
 
-    await this.gameRepository.save(game)
+   const currentGame =  await this.gameRepository.save(game)
+    console.log(currentGame);
+    
     return { message: 'Successfully joined game' };
   }
 }

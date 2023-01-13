@@ -1,8 +1,8 @@
 import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { GameService } from './game.service';
 import { createGameDto } from './dto/create.game-dto';
-import { Injectable, OnModuleInit } from '@nestjs/common';
-import { Server } from 'socket.io';
+import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import { Server, } from 'socket.io';
 import { joinGameDto } from './dto/join.game-dto';
 import { Repository } from 'typeorm';
 import { Player } from 'src/entities/player.entity';
@@ -23,6 +23,7 @@ export class GameGateway implements OnModuleInit {
 
   onModuleInit() {
     this.server.on('connection', async (socket) => {
+      
       const hash = socket.handshake.headers.hash
       const username = socket.handshake.query.username as string; // convert to only string
       const player = await this.playerRepository.findOne({
@@ -30,6 +31,7 @@ export class GameGateway implements OnModuleInit {
           name: username
         }
       })
+      
 
       if (!player) {
         console.log({ errorMessage: "Could not find player with name " + username });
@@ -41,10 +43,39 @@ export class GameGateway implements OnModuleInit {
         return socket.disconnect();
       }
 
-      
+      socket.on('disconnect', async () => {
+        const fetchUser = await this.playerRepository.findOne({ where: { name: username },relations: {
+          game:true
+        } });
+        
+        const checkGames = await this.GameRepository.findOne({
+          where: {
+            id: fetchUser.game.id
+          },
+          relations: {
+            players: true
+          }
+        })
+        console.log(checkGames);
 
+        if (fetchUser) {
+            fetchUser.game = null;
+            const currentPlayers = await this.playerRepository.save(fetchUser);
+            console.log(currentPlayers);
+        }
     });
-  }
+    
+    
+    
+    
+    
+  });
+    
+  };
+
+ 
+  
+  
 
   @SubscribeMessage('newGame')
   async onNewGame(@MessageBody() body: createGameDto, @ConnectedSocket() socket) {

@@ -25,8 +25,10 @@ export class GameService {
     game.name = body.name;
     game.maxPlayers = body.maxPlayers;
     game.currentPlayers = 1;
-    game.players.push(owner)
-    this.gameRepository.save(game);
+    game.players = [owner]
+    await this.gameRepository.save(game);
+    
+    
 
     return this.gameRepository.find()
   }
@@ -71,7 +73,6 @@ export class GameService {
     game.currentPlayers += 1;
 
    const currentGame =  await this.gameRepository.save(game)
-    console.log(currentGame);
     
     return { message: 'Successfully joined game' };
   }

@@ -16,7 +16,6 @@ export class UserService {
         const hashName = await hash(body.name);
         player.hash = hashName
         player.name= body.name
-        console.log(hashName);
         
         return this.playerRepository.save(player)
     }

@@ -23,7 +23,7 @@ export class GameGateway implements OnModuleInit {
 
   onModuleInit() {
     this.server.on('connection', async (socket) => {
-      
+
       const hash = socket.handshake.headers.hash
       const username = socket.handshake.query.username as string; // convert to only string
       const player = await this.playerRepository.findOne({
@@ -31,7 +31,6 @@ export class GameGateway implements OnModuleInit {
           name: username
         }
       })
-      
 
       if (!player) {
         console.log({ errorMessage: "Could not find player with name " + username });
@@ -44,10 +43,12 @@ export class GameGateway implements OnModuleInit {
       }
 
       socket.on('disconnect', async () => {
-        const fetchUser = await this.playerRepository.findOne({ where: { name: username },relations: {
-          game:true
-        } });
-        
+        const fetchUser = await this.playerRepository.findOne({
+          where: { name: username }, relations: {
+            game: true
+          }
+        });
+
         const checkGames = await this.GameRepository.findOne({
           where: {
             id: fetchUser.game.id
@@ -56,31 +57,29 @@ export class GameGateway implements OnModuleInit {
             players: true
           }
         })
+        if(checkGames.currentPlayers == 0){
+          this.GameRepository.remove(checkGames)
+        }
+
+        checkGames.currentPlayers -= 1
+        const updateGame = await this.GameRepository.save(checkGames)
         console.log(checkGames);
+        console.log(updateGame);
 
         if (fetchUser) {
-            fetchUser.game = null;
-            const currentPlayers = await this.playerRepository.save(fetchUser);
-            console.log(currentPlayers);
+          fetchUser.game = null;
+          const currentPlayers = await this.playerRepository.save(fetchUser);
+          console.log(currentPlayers);
         }
+      });
     });
-    
-    
-    
-    
-    
-  });
-    
-  };
 
- 
-  
-  
+  };
 
   @SubscribeMessage('newGame')
   async onNewGame(@MessageBody() body: createGameDto, @ConnectedSocket() socket) {
-    const ownerPlayer = socket.handshake.query.username 
-    const newGame = await this.gameService.createGame(body,ownerPlayer)
+    const ownerPlayer = socket.handshake.query.username
+    const newGame = await this.gameService.createGame(body, ownerPlayer)
 
     this.server.emit('onNewGame', {
       newGame

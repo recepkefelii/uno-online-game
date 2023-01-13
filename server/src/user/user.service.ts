@@ -3,12 +3,12 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Player } from '../entities/player.entity';
 import { userDto } from './dto/user.dto';
-import { hash, verify } from 'argon2';
+import { hash} from 'argon2';
 
 @Injectable()
 export class UserService {
     constructor(@InjectRepository(Player)
-    private playerRepository: Repository<Player>
+    private playerRepository: Repository<Player>,
     ) { }
 
     async newUser(body: userDto) {

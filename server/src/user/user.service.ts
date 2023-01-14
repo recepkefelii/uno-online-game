@@ -17,6 +17,7 @@ export class UserService {
         player.hash = hashName
         player.name= body.name
         
-        return this.playerRepository.save(player)
-    }
+        const user = await this.playerRepository.save(player)
+        return {"nickname": user.name}
+    }   
 }

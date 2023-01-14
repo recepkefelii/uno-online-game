@@ -1,26 +1,26 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import useUserPostData from '../hooks/UserPostData'
 
 const Register = () => {
-  const [nickname, setNickname] = useState('');
-  const handleSubmit = (e) => {
-    e.preventDefault();
-  };
+  const url = import.meta.env.VITE_REGISTER
+  const {nickname,SubmitUserData,error,setNickName,isLoading,} = useUserPostData(url)
 
   return (
     <div className="bg-gray-800 h-screen flex items-center justify-center">
-      <form onSubmit={handleSubmit} className="bg-white rounded-lg p-6">
+      <form onSubmit={SubmitUserData} className="bg-white rounded-lg p-6">
         <h2 className="text-lg font-medium text-center mb-4">Register</h2>
         <div className="mb-4">
-          <label className="block text-gray-700 font-medium mb-2">Nickname</label>
+          <label htmlFor='name' className="block text-gray-700 font-medium mb-2">Nickname</label>
           <input
             type="text"
             value={nickname}
-            onChange={(e) => setNickname(e.target.value)}
+            onChange={(e) => setNickName(e.target.value)}
             className="border border-gray-400 p-2 rounded-lg w-full"
             placeholder="Enter your nickname"
           />
         </div>
+        {error && <div className="text-red-500">{error}</div>}
         <div className="flex items-center justify-center">
           <motion.button
             type="submit"
@@ -28,7 +28,7 @@ const Register = () => {
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
           >
-            Register
+            {isLoading ? 'Loading...': "Register"}
           </motion.button>
         </div>
       </form>

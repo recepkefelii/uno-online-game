@@ -12,11 +12,14 @@ import { Game } from 'src/entities/game.entity';
 @Injectable()
 @WebSocketGateway()
 export class GameGateway implements OnModuleInit {
+
   @WebSocketServer()
   server: Server
+  
   constructor(private readonly gameService: GameService,
     @InjectRepository(Player)
     private readonly playerRepository: Repository<Player>,
+    
     @InjectRepository(Game)
     private readonly GameRepository: Repository<Game>
   ) { }
@@ -33,12 +36,10 @@ export class GameGateway implements OnModuleInit {
       })
 
       if (!player) {
-        console.log({ errorMessage: "Could not find player with name " + username });
         return socket.disconnect();
       }
 
       if (player.hash !== hash) {
-        console.log({ errorMessage: 'Invalid hash provided' });
         return socket.disconnect();
       }
 
@@ -48,28 +49,26 @@ export class GameGateway implements OnModuleInit {
             game: true
           }
         });
+        if(fetchUser.game.id){
+          const checkGames = await this.GameRepository.findOne({
+            where: {
+              id: fetchUser.game.id
+            },
+            relations: {
+              players: true
+            }
+          })
 
-        const checkGames = await this.GameRepository.findOne({
-          where: {
-            id: fetchUser.game.id
-          },
-          relations: {
-            players: true
+          checkGames.currentPlayers -= 1
+          await this.GameRepository.save(checkGames)
+  
+          if (fetchUser) {
+            fetchUser.game = null;
+            const currentPlayers = await this.playerRepository.save(fetchUser);
+            if(checkGames.currentPlayers == 0){
+              this.GameRepository.remove(checkGames)
+            }
           }
-        })
-        if(checkGames.currentPlayers == 0){
-          this.GameRepository.remove(checkGames)
-        }
-
-        checkGames.currentPlayers -= 1
-        const updateGame = await this.GameRepository.save(checkGames)
-        console.log(checkGames);
-        console.log(updateGame);
-
-        if (fetchUser) {
-          fetchUser.game = null;
-          const currentPlayers = await this.playerRepository.save(fetchUser);
-          console.log(currentPlayers);
         }
       });
     });
@@ -77,7 +76,7 @@ export class GameGateway implements OnModuleInit {
   };
 
   @SubscribeMessage('newGame')
-  async onNewGame(@MessageBody() body: createGameDto, @ConnectedSocket() socket) {
+  async onNewGame(@MessageBody() body: createGameDto, @ConnectedSocket() socket:any) {
     const ownerPlayer = socket.handshake.query.username
     const newGame = await this.gameService.createGame(body, ownerPlayer)
 

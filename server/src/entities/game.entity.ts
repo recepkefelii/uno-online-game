@@ -17,12 +17,12 @@ export class Game {
   @Column()
   currentPlayers: number;
 
-  @OneToMany(type => Player, player => player.game)
+  @OneToMany(type => Player, player => player.game, {cascade: true,})
   players: Player[];
-
-  @OneToMany(type => Card, card => card.game)
+  
+  @OneToMany(type => Card, card => card.game, {cascade: true})
   cards: Card[];
-
-  @OneToMany(type => Move, move => move.game)
+  
+  @OneToMany(type => Move, move => move.game, {cascade: true})
   moves: Move[];
 }

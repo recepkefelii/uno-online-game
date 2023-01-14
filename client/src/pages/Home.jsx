@@ -1,19 +1,22 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { NavLink } from 'react-router-dom';
 
 const Home = () => {
   return (
     <div className="bg-gray-800 h-screen flex items-center justify-center">
       <div className="w-full md:w-2/3 lg:w-1/2">
-        <img src="src/assets/UnoLogo.png" alt="Uno Logo" className="mx-auto" height={200} width={300}/>
+        <img src="src/assets/UnoLogo.png" alt="Uno Logo" className="mx-auto" height={200} width={300} />
         <div className="flex flex-col items-center mt-4">
-          <motion.button
+        <NavLink to={"/register"}>
+        <motion.button
             className="bg-red-500 text-2xl font-medium py-6 px-12 rounded-lg"
-            whileHover={{scale:1.1}}
+            whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
           >
-            Play
+           Play
           </motion.button>
+        </NavLink>
           <motion.button
             className="bg-yellow-500 text-2xl font-medium py-6 px-12 rounded-lg mt-4"
             whileHover={{ scale: 1.1 }}

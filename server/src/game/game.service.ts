@@ -74,6 +74,11 @@ export class GameService {
 
    const currentGame =  await this.gameRepository.save(game)
     
-    return { message: 'Successfully joined game' };
+    return { message: 'Successfully joined game',
+    "user":{
+      name:player.name,
+      id:player.id
+    }
+  };
   }
 }

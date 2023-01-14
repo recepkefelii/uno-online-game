@@ -49,7 +49,7 @@ export class GameGateway implements OnModuleInit {
             game: true
           }
         });
-        if(fetchUser.game.id){
+        if(fetchUser.game && fetchUser.game.id){
           const checkGames = await this.GameRepository.findOne({
             where: {
               id: fetchUser.game.id
@@ -66,10 +66,16 @@ export class GameGateway implements OnModuleInit {
             fetchUser.game = null;
             const currentPlayers = await this.playerRepository.save(fetchUser);
             if(checkGames.currentPlayers == 0){
+              this.server.emit('onDeleteGame', {
+                "id":checkGames.name,
+                "name":checkGames.name
+
+              })
               this.GameRepository.remove(checkGames)
             }
           }
         }
+
       });
     });
 

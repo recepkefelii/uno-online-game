@@ -4,7 +4,7 @@ import useUserPostData from '../hooks/UserPostData'
 
 const Register = () => {
   const url = import.meta.env.VITE_REGISTER
-  const {nickname,SubmitUserData,error,setNickName,isLoading,} = useUserPostData(url)
+  const { nickname, SubmitUserData, error, setNickName, isLoading, } = useUserPostData(url)
 
   return (
     <div className="bg-gray-800 h-screen flex items-center justify-center">
@@ -28,7 +28,7 @@ const Register = () => {
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
           >
-            {isLoading ? 'Loading...': "Register"}
+            {isLoading ? 'Loading...' : "Register"}
           </motion.button>
         </div>
       </form>

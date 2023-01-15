@@ -9,9 +9,9 @@ const Register = () => {
   return (
     <div className="bg-gray-800 h-screen flex items-center justify-center">
       <form onSubmit={SubmitUserData} className="bg-white rounded-lg p-6">
-        <h2 className="text-lg font-medium text-center mb-4">Register</h2>
+        <h2 className="text-lg font-bold text-center mb-4">Register</h2>
         <div className="mb-4">
-          <label htmlFor='name' className="block text-gray-700 font-medium mb-2">Nickname</label>
+          <label htmlFor='name' className="block text-gray-700 font-boldm mb-2">Nickname</label>
           <input
             type="text"
             value={nickname}
@@ -24,7 +24,7 @@ const Register = () => {
         <div className="flex items-center justify-center">
           <motion.button
             type="submit"
-            className="bg-red-500 text-white font-medium py-2 px-4 rounded-lg"
+            className="bg-red-500 text-white font-bold py-2 px-4 rounded-lg"
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
           >

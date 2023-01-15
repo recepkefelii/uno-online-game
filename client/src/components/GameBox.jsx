@@ -26,9 +26,9 @@ const GameBox = () =>{
        <>
        {
         rooms.map((index,item) => (
-            <div class="bg-blue-500 h-14 flex items-center mt-5 hover:bg-blue-400">
-      <div class="text-white font-medium px-4 flex-1">Room Name</div>
-  <div class="text-white font-medium px-4 text-right flex-1">4/2</div>
+            <div className="bg-blue-500 h-14 flex items-center mt-5 hover:bg-blue-400 border border-blue-700 rounded">
+      <div className="text-white font-bold px-4 flex-1 ">Room Name</div>
+  <div className="text-white font-bold px-4 text-right flex-1">4/2</div>
 </div>
         ))
        }

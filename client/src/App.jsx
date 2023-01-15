@@ -2,6 +2,7 @@ import { useState } from 'react'
 import {Route, Routes} from 'react-router-dom'
 import Home from './pages/Home'
 import Register from './pages/Register'
+import GameRooms from './pages/Room'
 
 function App() {
 
@@ -9,7 +10,7 @@ function App() {
     <Routes>
       <Route path='/' element={<Home/>}/>
       <Route path='/register' element={<Register/>}/>
-      <Route path='/games' element={""}/>
+      <Route path='/rooms' element={<GameRooms/>}/>
       <Route path='/create-game' element={""}/>
       <Route path='game/:gameid' element={""} />
     </Routes>

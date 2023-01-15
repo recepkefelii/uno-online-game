@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { NavLink } from 'react-router-dom';
 
+
 const Home = () => {
   return (
     <div className="bg-gray-800 h-screen flex items-center justify-center">

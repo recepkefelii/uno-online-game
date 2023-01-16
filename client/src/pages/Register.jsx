@@ -16,7 +16,7 @@ const Register = () => {
             type="text"
             value={nickname}
             onChange={(e) => setNickName(e.target.value)}
-            className="border border-gray-400 p-2 rounded-lg w-full"
+            className="border border-gray-400 p-2 rounded-lg w-full outline-none"
             placeholder="Enter your nickname"
           />
         </div>

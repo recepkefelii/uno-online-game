@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import GameBox from '../components/GameBox'
+import GameBox from '../components/Game/GameBox'
 import { motion } from 'framer-motion';
-import GameModal from '../components/GameModal'
+import GameModal from '../components/Game/GameModal'
 const GameRooms = () => {
     const [modalVisible, setModalVisible] = useState(false)
 
@@ -15,9 +15,10 @@ const GameRooms = () => {
                 <div className={`flex-1 w-full mx-auto my-auto bg-blue-gray-200 rounded-lg mt-7 `}>
                     {
                         modalVisible ? null :
-                            <div className='flex justify-between sticky top-0 items-center py-3'>
-                                <div className='flex-1 ml-4 font-bold text-white'>Room Name</div>
-                                <div className='flex-2 mr-4 font-bold text-white'>Status</div>
+                            <div className='flex justify-around items-center py-3'>
+                                <div className='ml-4 font-bold text-white'>Room Name</div>
+                                    <input type="text" className='outline-none border-none rounded-md h-7 w-2/5' placeholder='Search room name' />
+                                <div className='mr-4 font-bold text-white'>Status</div>
                             </div>
                     }
                     <GameModal modalVisible={modalVisible} setModalVisible={setModalVisible} />
@@ -26,7 +27,7 @@ const GameRooms = () => {
                     </div>
                     {
                         modalVisible ? null :
-                            <div className="items-center flex justify-around sticky top-0 mt-auto py-3">
+                            <div className="items-center flex justify-around sticky top-0 mt-auto py-2">
                                 <motion.button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 border border-green-700 rounded flex"
                                     whileHover={{ scale: 1.1 }}
                                     whileTap={{ scale: 0.95 }}

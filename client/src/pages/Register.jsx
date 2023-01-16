@@ -11,7 +11,7 @@ const Register = () => {
       <form onSubmit={SubmitUserData} className="bg-white rounded-lg p-6">
         <h2 className="text-lg font-bold text-center mb-4">Register</h2>
         <div className="mb-4">
-          <label htmlFor='name' className="block text-gray-700 font-boldm mb-2">Nickname</label>
+          <label htmlFor='name' className="block text-gray-500, font-boldm mb-2">Nickname</label>
           <input
             type="text"
             value={nickname}

@@ -8,18 +8,20 @@ import { Repository } from 'typeorm';
 import { Player } from 'src/entities/player.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Game } from 'src/entities/game.entity';
-import {verify} from 'argon2'
+import { verify } from 'argon2'
 @Injectable()
-@WebSocketGateway()
+@WebSocketGateway({
+  cors: ['http://localhost:3000']
+})
 export class GameGateway implements OnModuleInit {
 
   @WebSocketServer()
   server: Server
-  
+
   constructor(private readonly gameService: GameService,
     @InjectRepository(Player)
     private readonly playerRepository: Repository<Player>,
-    
+
     @InjectRepository(Game)
     private readonly GameRepository: Repository<Game>
   ) { }
@@ -27,6 +29,7 @@ export class GameGateway implements OnModuleInit {
   onModuleInit() {
     this.server.on('connection', async (socket) => {
       const username = socket.handshake.query.username as string; // convert to only string
+
       const player = await this.playerRepository.findOne({
         where: {
           name: username
@@ -36,8 +39,9 @@ export class GameGateway implements OnModuleInit {
       if (!player) {
         return socket.disconnect();
       }
- 
-        const verifyUsername = await verify(player.hash,username)
+
+      const verifyUsername = await verify(player.hash, username)
+
       if (!verifyUsername) {
         return socket.disconnect();
       }
@@ -48,7 +52,7 @@ export class GameGateway implements OnModuleInit {
             game: true
           }
         });
-        if(fetchUser.game && fetchUser.game.id){
+        if (fetchUser.game && fetchUser.game.id) {
           const checkGames = await this.GameRepository.findOne({
             where: {
               id: fetchUser.game.id
@@ -60,14 +64,14 @@ export class GameGateway implements OnModuleInit {
 
           checkGames.currentPlayers -= 1
           await this.GameRepository.save(checkGames)
-  
+
           if (fetchUser) {
             fetchUser.game = null;
             const currentPlayers = await this.playerRepository.save(fetchUser);
-            if(checkGames.currentPlayers == 0){
+            if (checkGames.currentPlayers == 0) {
               this.server.emit('onDeleteGame', {
-                "id":checkGames.name,
-                "name":checkGames.name
+                "id": checkGames.name,
+                "name": checkGames.name
 
               })
               this.GameRepository.remove(checkGames)
@@ -81,7 +85,7 @@ export class GameGateway implements OnModuleInit {
   };
 
   @SubscribeMessage('newGame')
-  async onNewGame(@MessageBody() body: createGameDto, @ConnectedSocket() socket:any) {
+  async onNewGame(@MessageBody() body: createGameDto, @ConnectedSocket() socket: any) {
     const ownerPlayer = socket.handshake.query.username
     const newGame = await this.gameService.createGame(body, ownerPlayer)
 

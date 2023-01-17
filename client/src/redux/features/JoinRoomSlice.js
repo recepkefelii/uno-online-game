@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
-  socketUrl: "http://localhost:3000/?username=memosadada"
+    nickname: ""
 }
 
 export const JoinRoomSlice = createSlice({
@@ -9,7 +9,7 @@ export const JoinRoomSlice = createSlice({
   initialState,
   reducers: {
     setName: (state, action) => {
-      state.name = action.payload
+      state.nickname = action.payload
     }
   },
 })

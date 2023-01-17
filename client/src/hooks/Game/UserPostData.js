@@ -1,7 +1,10 @@
 import { useState } from 'react'
+import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router'
+import { setName } from '../../redux/features/JoinRoomSlice'
 
 const useUserPostData = (url) => {
+    const dispatch = useDispatch()
     const navigate = useNavigate()
     const [nickName, setNickName] = useState('')
     const [isLoading, setIsLoading] = useState(false)
@@ -10,7 +13,6 @@ const useUserPostData = (url) => {
     const SubmitUserData = (e) => {
         e.preventDefault();
         postDataServer();
-        navigate("/rooms")
     }
 
     const postDataServer = async () => {
@@ -27,8 +29,10 @@ const useUserPostData = (url) => {
                 }
             })
 
-            const data = await response.text()
-            localStorage.setItem("nickname", data)
+            const data = await response.json()
+            dispatch(setName(data.nickname))
+            localStorage.setItem("nickname", JSON.stringify(data.nickname))
+            navigate("/rooms")
             if (!response.ok) {
                 throw new Error(data.message)
             }

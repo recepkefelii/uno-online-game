@@ -26,8 +26,8 @@ const GameBox = () => {
     return (
         <>
             {
-                rooms.map((index, item) => (
-                    <motion.div key={item.id} className="bg-blue-500 h-14 flex items-center  hover:bg-blue-400 border border-blue-700 rounded mt-2"
+                rooms.map((item,index) => (
+                    <motion.div key={index} className="bg-blue-500 h-14 flex items-center  hover:bg-blue-400 border border-blue-700 rounded mt-2"
                         whileHover={{ scale: 1.03 }}
                         whileTap={{ scale: 0.98 }}
                     >

@@ -1,15 +1,20 @@
 import { useEffect } from "react"
-import { io,Socket } from "socket.io-client"
+import { io } from "socket.io-client"
 import { useNavigate } from "react-router"
+import { useSelector } from "react-redux"
 
-const onSocketConnect = () => {
+const onSocketConnect = (nickname) => {
     const navigate = useNavigate()
     useEffect(() => {
-        const socket = io("http://localhost:3000/?username=mesadmo")
-        socket.on('disconnect',() => {
-            navigate("/register")
-            console.log("disconnect");
-        })
+        const socket = io(`${import.meta.env.VITE_SERVER}${nickname}`)
+        console.log(`${import.meta.env.VITE_SERVER}${nickname}`);
+
+        if (!localStorage.getItem("nickname")) {
+            socket.on('disconnect', () => {
+                navigate("/register")
+                console.log("disconnect");
+            })
+        }
     },[])
 }
 

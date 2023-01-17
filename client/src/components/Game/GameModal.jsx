@@ -20,14 +20,14 @@ const GameModal = ({ modalVisible, setModalVisible }) => {
           </div>
           <div className="pl-7 flex flex-row items-center">
             <div className="gap-20 mr-5">
-            <Radio id="react" name="type" label="2" defaultChecked />
-            <Radio id="react" name="type" label="3" />
-            <Radio id="react" name="type" label="4" />
+              <Radio id="react" name="type" label="2" defaultChecked />
+              <Radio id="react" name="type" label="3" />
+              <Radio id="react" name="type" label="4" />
             </div>
             <div>Max Players</div>
           </div>
           <div className="flex justify-between mt-5 pl-5 pr-5">
-          <motion.button className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 border border-red-700 rounded flex"
+            <motion.button className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 border border-red-700 rounded flex"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setModalVisible(false)}

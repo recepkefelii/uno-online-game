@@ -17,7 +17,7 @@ const GameRooms = () => {
                         modalVisible ? null :
                             <div className='flex justify-around items-center py-3'>
                                 <div className='ml-4 font-bold text-white'>Room Name</div>
-                                    <input type="text" className='outline-none border-none rounded-md h-7 w-2/5' placeholder='Search room name' />
+                                <input type="text" className='outline-none border-none rounded-md h-7 w-2/5' placeholder='Search room name' />
                                 <div className='mr-4 font-bold text-white'>Status</div>
                             </div>
                     }

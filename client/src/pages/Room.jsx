@@ -1,13 +1,18 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import GameBox from '../components/Game/GameBox'
 import { motion } from 'framer-motion';
 import GameModal from '../components/Game/GameModal'
-import useUserControl from '../hooks/Game/UserControl';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+
 
 const GameRooms = () => {
     const [modalVisible, setModalVisible] = useState(false)
-   const {user} = useUserControl()
-   console.log(user);
+    const dispatch = useDispatch()
+
+    useEffect(() => {
+        const {nickname} = JSON.parse(localStorage.getItem("nickname"))
+    },[])
 
     return (
         <div className={`h-screen bg-gray-800 flex `}>
@@ -19,10 +24,10 @@ const GameRooms = () => {
                 <div className={`flex-1 w-full mx-auto my-auto bg-blue-gray-200 rounded-lg mt-7 `}>
                     {
                         modalVisible ? null :
-                            <div className='flex justify-around items-center py-3'>
-                                <div className='ml-4 font-bold text-white'>Room Name</div>
+                            <div className='flex justify-between items-center py-3'>
+                                <div className='ml-3 font-bold text-white'>Room Name</div>
                                 <input type="text" className='outline-none border-none rounded-md h-7 w-2/5' placeholder='Search room name' />
-                                <div className='mr-4 font-bold text-white'>Status</div>
+                                <div className='mr-3 font-bold text-white'>Status</div>
                             </div>
                     }
                     <GameModal modalVisible={modalVisible} setModalVisible={setModalVisible} />

@@ -3,7 +3,6 @@ import { Radio } from "@material-tailwind/react";
 import { motion } from 'framer-motion';
 
 const GameModal = ({ modalVisible, setModalVisible }) => {
-  console.log(modalVisible);
   if (!modalVisible) return null;
   return (
     <div>

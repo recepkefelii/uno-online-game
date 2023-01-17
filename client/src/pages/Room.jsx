@@ -1,9 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import GameBox from '../components/Game/GameBox'
 import { motion } from 'framer-motion';
 import GameModal from '../components/Game/GameModal'
+import useUserControl from '../hooks/Game/UserControl';
+
 const GameRooms = () => {
     const [modalVisible, setModalVisible] = useState(false)
+   const {user} = useUserControl()
+   console.log(user);
 
     return (
         <div className={`h-screen bg-gray-800 flex `}>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import useUserPostData from '../hooks/UserPostData'
+import useUserPostData from '../hooks/Game/UserPostData'
 
 const Register = () => {
   const url = import.meta.env.VITE_REGISTER

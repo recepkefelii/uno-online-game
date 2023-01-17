@@ -1,9 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
-  name: {
-    nickname: ""
-  },
+  socketUrl: "http://localhost:3000/?username=memosadada"
 }
 
 export const JoinRoomSlice = createSlice({

@@ -4,11 +4,12 @@ import { motion } from 'framer-motion';
 import GameModal from '../components/Game/GameModal'
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-
+import onSocketConnect from '../hooks/Socket/OnSocket';
 
 const GameRooms = () => {
     const [modalVisible, setModalVisible] = useState(false)
     const dispatch = useDispatch()
+    const onConnect = onSocketConnect()
 
     useEffect(() => {
         const {nickname} = JSON.parse(localStorage.getItem("nickname"))

@@ -8,7 +8,7 @@ import { Repository } from 'typeorm';
 import { Player } from 'src/entities/player.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Game } from 'src/entities/game.entity';
-
+import {verify} from 'argon2'
 @Injectable()
 @WebSocketGateway()
 export class GameGateway implements OnModuleInit {
@@ -26,8 +26,6 @@ export class GameGateway implements OnModuleInit {
 
   onModuleInit() {
     this.server.on('connection', async (socket) => {
-
-      const hash = socket.handshake.headers.hash
       const username = socket.handshake.query.username as string; // convert to only string
       const player = await this.playerRepository.findOne({
         where: {
@@ -38,8 +36,9 @@ export class GameGateway implements OnModuleInit {
       if (!player) {
         return socket.disconnect();
       }
-
-      if (player.hash !== hash) {
+ 
+        const verifyUsername = await verify(player.hash,username)
+      if (!verifyUsername) {
         return socket.disconnect();
       }
 

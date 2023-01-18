@@ -1,7 +1,7 @@
-import { IsString,IsNumber } from 'class-validator';
+import { IsString, IsNumber } from 'class-validator';
 export class createGameDto {
     @IsString()
-    name:string
+    name: string
     @IsNumber()
     currentPlayers: number
     @IsNumber()

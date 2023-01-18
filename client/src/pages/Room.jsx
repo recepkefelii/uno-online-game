@@ -5,16 +5,14 @@ import GameModal from '../components/Game/GameModal'
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import onSocketConnect from '../hooks/Socket/OnSocket';
+import useGetRooms from '../hooks/Socket/Room/GetRooms';
 
-const GameRooms = () => {
+const GameRooms = (nickname) => {
     const [modalVisible, setModalVisible] = useState(false)
     const dispatch = useDispatch()
         const {nickname} = useSelector((state) => state.JoinRoomSlice)
-        console.log(nickname);
         onSocketConnect(nickname)
-        useEffect(() => {
-            console.log(nickname);
-        },[nickname])
+        useGetRooms()
 
     return (
         <div className={`h-screen bg-gray-800 flex `}>

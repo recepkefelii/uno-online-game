@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { setName } from '../redux/features/JoinRoomSlice';
+import { setName } from '../redux/features/User/UserSlice';
 
 
 const Home = () => {

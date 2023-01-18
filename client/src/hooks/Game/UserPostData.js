@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router'
-import { setName } from '../../redux/features/JoinRoomSlice'
+import { setName } from '../../redux/features/User/UserSlice'
 
 const useUserPostData = (url) => {
     const dispatch = useDispatch()

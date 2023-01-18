@@ -29,6 +29,7 @@ export class GameGateway implements OnModuleInit {
   onModuleInit() {
     this.server.on('connection', async (socket) => {
       const username = socket.handshake.query.username as string; // convert to only string
+      if (!username) socket.disconnect()
 
       const player = await this.playerRepository.findOne({
         where: {

@@ -69,7 +69,7 @@ export class GameGateway implements OnModuleInit {
             fetchUser.game = null;
             const currentPlayers = await this.playerRepository.save(fetchUser);
             if (checkGames.currentPlayers == 0) {
-              this.server.emit('onDeleteGame', {
+              socket.broadcast.emit('onDeleteGame', {
                 "id": checkGames.name,
                 "name": checkGames.name
 
@@ -89,7 +89,7 @@ export class GameGateway implements OnModuleInit {
     const ownerPlayer = socket.handshake.query.username
     const newGame = await this.gameService.createGame(body, ownerPlayer)
 
-    this.server.emit('onNewGame', {
+    socket.broadcast.emit('onNewGame', {
       newGame
     })
 
@@ -103,5 +103,10 @@ export class GameGateway implements OnModuleInit {
       join
     })
     return join
+  }
+  @SubscribeMessage('getRooms')
+  async handleGetRooms(@ConnectedSocket() socket: any) {
+    const allRooms = await this.GameRepository.find();
+    socket.emit('allRooms', allRooms);
   }
 }

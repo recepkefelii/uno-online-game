@@ -8,11 +8,11 @@ export class Player {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({unique: true})
+  @Column({ unique: true })
   name: string;
 
-  @Column({nullable: true,})
-  hash:string
+  @Column({ nullable: true, })
+  hash: string
 
   @ManyToOne(type => Game, game => game.players)
   game: Game;

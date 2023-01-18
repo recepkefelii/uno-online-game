@@ -5,9 +5,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Game } from '../entities/game.entity';
 import { Player } from '../entities/player.entity';
 @Module({
-    imports: [ TypeOrmModule.forFeature([Game,Player])],
-    providers:[GameGateway, GameService]
+    imports: [TypeOrmModule.forFeature([Game, Player])],
+    providers: [GameGateway, GameService]
 })
 export class GameModule {
-    
+
 }

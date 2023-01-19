@@ -31,7 +31,6 @@ const useUserPostData = (url) => {
 
             const data = await response.json()
             dispatch(setName(data.nickname))
-            localStorage.setItem("nickname", JSON.stringify(data.nickname))
             navigate("/rooms")
             if (!response.ok) {
                 throw new Error(data.message)

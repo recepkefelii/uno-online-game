@@ -1,18 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import GameBox from '../components/Game/GameBox'
 import { motion } from 'framer-motion';
 import GameModal from '../components/Game/GameModal'
-import { useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import onSocketConnect from '../hooks/Socket/OnSocket';
 import useGetRooms from '../hooks/Socket/Room/GetRooms';
-
-const GameRooms = (nickname) => {
+const GameRooms = () => {
     const [modalVisible, setModalVisible] = useState(false)
-    const dispatch = useDispatch()
-        const {nickname} = useSelector((state) => state.JoinRoomSlice)
-        onSocketConnect(nickname)
-        useGetRooms()
+        const rooms = useGetRooms()
+        console.log(rooms);
 
     return (
         <div className={`h-screen bg-gray-800 flex `}>

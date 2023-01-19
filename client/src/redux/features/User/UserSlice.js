@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
+    status: false,
     nickname: ""
 }
 
@@ -10,6 +11,7 @@ export const JoinRoomSlice = createSlice({
   reducers: {
     setName: (state, action) => {
       state.nickname = action.payload
+      state.status = true
     }
   },
 })

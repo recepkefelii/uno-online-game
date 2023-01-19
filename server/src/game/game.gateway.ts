@@ -11,7 +11,7 @@ import { Game } from 'src/entities/game.entity';
 import { verify } from 'argon2'
 @Injectable()
 @WebSocketGateway({
-  cors: ['http://localhost:3000']
+  cors: ['http://localhost:3001',]
 })
 export class GameGateway implements OnModuleInit {
 
@@ -106,8 +106,10 @@ export class GameGateway implements OnModuleInit {
     return join
   }
   @SubscribeMessage('getRooms')
-  async handleGetRooms(@ConnectedSocket() socket: any) {
-    const allRooms = await this.GameRepository.find();
-    socket.emit('allRooms', allRooms);
+  async handleGetRooms(@MessageBody() body:string ,@ConnectedSocket() socket: any) {
+      const allRooms = await this.GameRepository.find();
+      console.log(allRooms);
+      
+      this.server.emit('allRooms', allRooms);
+    }
   }
-}

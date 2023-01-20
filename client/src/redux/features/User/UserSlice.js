@@ -10,12 +10,12 @@ export const JoinRoomSlice = createSlice({
   initialState,
   reducers: {
     setName: (state, action) => {
-      state.nickname = action.payload
-      state.status = true
-    }
+      state.nickname = action.payload;
+      state.status = true;
+    },
   },
-})
+});
 
-export const { setName } = JoinRoomSlice.actions
+export const { setName } = JoinRoomSlice.actions;
 
-export default JoinRoomSlice.reducer
+export default JoinRoomSlice.reducer;

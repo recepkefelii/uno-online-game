@@ -2,13 +2,8 @@ import React, { useState } from 'react';
 import GameBox from '../components/Game/GameBox'
 import { motion } from 'framer-motion';
 import GameModal from '../components/Game/GameModal'
-import useGetRooms from '../hooks/Socket/Room/GetRooms';
-import { useSelector } from 'react-redux';
 const GameRooms = () => {
     const [modalVisible, setModalVisible] = useState(false)
-        useGetRooms()
-        const games = useSelector(state => state.RoomSlice);
-        console.log(games);
 
     return (
         <div className={`h-screen bg-gray-800 flex `}>

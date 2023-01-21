@@ -1,6 +1,5 @@
 # MultiPlayer Uno Game
-
-UNO GAME
+UNO is a multi-player card game in which the objective is to be the first player to get rid of all the cards in their hand.
 
 
 - [Demo](#demo) Coming Soon

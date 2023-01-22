@@ -12,6 +12,15 @@ export class Game {
   name: string;
 
   @Column()
+  password: string
+
+  @Column({default: false,nullable: true})
+  private: boolean;
+
+  @Column()
+  owner: string
+
+  @Column()
   maxPlayers: number;
 
   @Column()

@@ -5,6 +5,7 @@ import { Game } from '../entities/game.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Player } from 'src/entities/player.entity';
+import { hash, verify } from 'argon2';
 
 @Injectable()
 export class GameService {
@@ -21,19 +22,40 @@ export class GameService {
         name: ownerPlayer
       }
     })
-    const game = new Game();
-    game.name = body.name;
-    game.maxPlayers = body.maxPlayers;
-    game.currentPlayers = 1;
-    game.players = [owner]
-    await this.gameRepository.save(game);
+    const passwordHash = await hash(body.password)
 
+    if (body.isPrivate) {
+      const game = new Game();
 
+      game.name = body.name;
+      game.maxPlayers = body.maxPlayers;
+      game.password = passwordHash;
+      game.owner = owner.name;
+      game.private = true
+      game.currentPlayers = 1;
+      game.players = [owner]
 
-    return this.gameRepository.find()
+      await this.gameRepository.save(game);
+      return this.gameRepository.find()
+    }
+
+    if(!body.isPrivate){
+      const game = new Game();
+
+      game.name = body.name;
+      game.maxPlayers = body.maxPlayers;
+      game.password = passwordHash;
+      game.owner = owner.name;
+      game.private = false
+      game.currentPlayers = 1;
+      game.players = [owner]
+
+      await this.gameRepository.save(game);
+      return this.gameRepository.find()
+    }
   }
 
-  async joinGame(body: joinGameDto, username: any) {
+  async joinGame(body: joinGameDto, socket: any) {
     const gameId = body.gameId
     const game = await this.gameRepository.findOne({
       where: {
@@ -41,45 +63,46 @@ export class GameService {
       },
       relations: ['players']
     })
-
-    const findByUsername = await this.playerRepository.findOne(
-      {
-        where: {
-          name: username.handshake.query.username
+    if(game.private){
+      const checkPassword = await verify(game.password, body.password)
+      if (!checkPassword) {
+        return { error: "deneme" }
+      }
+      const findByUsername = await this.playerRepository.findOne(
+        {
+          where: {
+            name: socket.handshake.query.username
+          }
         }
-      }
-    )
+      )
+  
+      const player = await this.playerRepository.findOne({
+        where: {
+          id: findByUsername.id
+        }
+      });
+  
+  
+      if (!player) return { error: 'Player not found' };
+  
+      if (!game) return { error: 'Game not found' }
 
-    const player = await this.playerRepository.findOne({
-      where: {
-        id: findByUsername.id
-      }
-    });
-
-
-    if (!player) {
-      return { error: 'Player not found' };
+  
+      if (game.currentPlayers >= game.maxPlayers) return { error: 'Game is full' };
+  
+      game.players.push(player)
+      game.currentPlayers += 1;
+  
+      const currentGame = await this.gameRepository.save(game)
+      console.log(currentGame);
+      
+      return {
+        message: 'Successfully joined game',
+        "user": {
+          name: player.name,
+          id: player.id
+        }
+      };
     }
-
-    if (!game) {
-      return { error: 'Game not found' }
-    }
-
-    if (game.currentPlayers >= game.maxPlayers) {
-      return { error: 'Game is full' };
-    }
-
-    game.players.push(player)
-    game.currentPlayers += 1;
-
-    const currentGame = await this.gameRepository.save(game)
-
-    return {
-      message: 'Successfully joined game',
-      "user": {
-        name: player.name,
-        id: player.id
-      }
-    };
   }
 }

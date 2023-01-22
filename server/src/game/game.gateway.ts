@@ -73,7 +73,6 @@ export class GameGateway implements OnModuleInit {
               socket.broadcast.emit('onDeleteGame', {
                 "id": checkGames.name,
                 "name": checkGames.name
-
               })
               this.GameRepository.remove(checkGames)
             }
@@ -108,7 +107,6 @@ export class GameGateway implements OnModuleInit {
   @SubscribeMessage('getRooms')
   async handleGetRooms(@MessageBody() body:string ,@ConnectedSocket() socket: any) {
       const allRooms = await this.GameRepository.find();
-      console.log(allRooms);
       
       this.server.emit('allRooms', allRooms);
     }

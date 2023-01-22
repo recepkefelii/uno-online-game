@@ -1,4 +1,4 @@
-import { IsString, IsNumber } from 'class-validator';
+import { IsString, IsNumber, IsBoolean } from 'class-validator';
 export class createGameDto {
     @IsString()
     name: string
@@ -6,4 +6,8 @@ export class createGameDto {
     currentPlayers: number
     @IsNumber()
     maxPlayers: number
+    @IsString()
+    password: string
+    @IsBoolean()
+    isPrivate: boolean
 }

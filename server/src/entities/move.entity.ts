@@ -8,7 +8,7 @@ export class Move {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({})
   type: string;
 
   @ManyToOne(type => Game, game => game.moves)

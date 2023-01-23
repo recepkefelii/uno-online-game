@@ -1,13 +1,30 @@
 version: '3.8'
 services:
-  dev-db: 
+  database: 
     image: postgres:latest
+    container_name: postgres-database
     ports: 
-    - 5431:5432
+    - 5432:5432
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 123
-      POSTGRES_DB: nest-js
+      - POSTGRES_USER=${DATABASE_USER}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    networks:
+      - uno
+  backend:
+    build: ./server
+    ports:
+      - 3000:3000
+    environment:
+      - DB_TYPE=${DB_TYPE}
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_USER=${DATABASE_USER}
+      - POSTGRES_PASS=${DATABASE_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_SYNC=false
+      - POSTGRES_PORT=${POSTGRES_PORT}
+    depends_on:
+      - database
     networks:
       - uno
 

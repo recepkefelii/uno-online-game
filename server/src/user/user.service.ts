@@ -3,7 +3,7 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Player } from '../entities/player.entity';
 import { userDto } from './dto/user.dto';
-import { hash } from 'argon2';
+import * as bcrypt from "bcrypt";
 
 @Injectable()
 export class UserService {
@@ -13,7 +13,8 @@ export class UserService {
 
     async newUser(body: userDto) {
         const player = new Player()
-        const hashName = await hash(body.name);
+        const saltRounds = 10;
+        const hashName = await bcrypt.hash(body.name, saltRounds);
         player.hash = hashName
         player.name = body.name
 

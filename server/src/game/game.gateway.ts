@@ -8,7 +8,7 @@ import { Repository } from 'typeorm';
 import { Player } from 'src/entities/player.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Game } from 'src/entities/game.entity';
-import { verify } from 'argon2'
+import * as bcrypt from "bcrypt";
 @Injectable()
 @WebSocketGateway({
   cors: ['http://localhost:3001',]
@@ -41,7 +41,7 @@ export class GameGateway implements OnModuleInit {
         return socket.disconnect();
       }
 
-      const verifyUsername = await verify(player.hash, username)
+      const verifyUsername = await bcrypt.compare(player.hash, username)
 
       if (!verifyUsername) {
         return socket.disconnect();

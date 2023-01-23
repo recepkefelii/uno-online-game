@@ -9,5 +9,5 @@ export const ormConfig: TypeOrmModuleOptions = {
   database: process.env.POSTGRES_DB || 'nest-js',
   entities: [__dirname + '/../**/*.entity{.ts,.js}'],
   migrations: ['dist/**/*.entity.js'],
-  synchronize: false
+  synchronize: true
 }

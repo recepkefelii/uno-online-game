@@ -5,7 +5,7 @@ import { Game } from '../entities/game.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Player } from 'src/entities/player.entity';
-import { hash, verify } from 'argon2';
+import * as bcrypt from "bcrypt";
 
 @Injectable()
 export class GameService {
@@ -22,7 +22,7 @@ export class GameService {
         name: ownerPlayer
       }
     })
-    const passwordHash = await hash(body.password)
+    const passwordHash = await bcrypt.hash(body.password,10)
 
     if (body.isPrivate) {
       const game = new Game();
@@ -64,7 +64,7 @@ export class GameService {
       relations: ['players']
     })
     if(game.private){
-      const checkPassword = await verify(game.password, body.password)
+      const checkPassword = await bcrypt.compare(game.password, body.password)
       if (!checkPassword) {
         return { error: "deneme" }
       }

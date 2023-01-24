@@ -11,7 +11,9 @@ import { Game } from 'src/entities/game.entity';
 import * as bcrypt from "bcrypt";
 @Injectable()
 @WebSocketGateway({
-  cors: ['http://localhost:3001',]
+  cors: {
+    origin: "*" 
+  }
 })
 export class GameGateway implements OnModuleInit {
 
@@ -28,22 +30,32 @@ export class GameGateway implements OnModuleInit {
 
   onModuleInit() {
     this.server.on('connection', async (socket) => {
-      const username = socket.handshake.query.username as string; // convert to only string
-      if (!username) socket.disconnect()
+      const username = socket.handshake.query.username as string;
+      console.log(username);
+      // convert to only string
+      if (!username) {
+        socket.disconnect()
+      }
 
       const player = await this.playerRepository.findOne({
         where: {
           name: username
         }
       })
+      console.log(player);
+
 
       if (!player) {
+        console.log("player hatası");
+
         return socket.disconnect();
       }
 
-      const verifyUsername = await bcrypt.compare(player.hash, username)
+      const verifyUsername = await bcrypt.compare(username,player.hash)
 
       if (!verifyUsername) {
+        console.log("verifyUsername hatası");
+
         return socket.disconnect();
       }
 
@@ -105,9 +117,9 @@ export class GameGateway implements OnModuleInit {
     return join
   }
   @SubscribeMessage('getRooms')
-  async handleGetRooms(@MessageBody() body:string ,@ConnectedSocket() socket: any) {
-      const allRooms = await this.GameRepository.find();
-      
-      this.server.emit('allRooms', allRooms);
-    }
+  async handleGetRooms(@MessageBody() body: string, @ConnectedSocket() socket: any) {
+    const allRooms = await this.GameRepository.find();
+
+    this.server.emit('allRooms', allRooms);
   }
+}

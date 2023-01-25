@@ -30,9 +30,8 @@ export class GameGateway implements OnModuleInit {
 
   onModuleInit() {
     this.server.on('connection', async (socket) => {
-      const username = socket.handshake.query.username as string;
-      console.log(username);
-      // convert to only string
+      const username = socket.handshake.query.username as string;  // convert to only string
+     
       if (!username) {
         socket.disconnect()
       }
@@ -42,20 +41,15 @@ export class GameGateway implements OnModuleInit {
           name: username
         }
       })
-      console.log(player);
 
 
       if (!player) {
-        console.log("player hatası");
-
         return socket.disconnect();
       }
 
       const verifyUsername = await bcrypt.compare(username,player.hash)
 
       if (!verifyUsername) {
-        console.log("verifyUsername hatası");
-
         return socket.disconnect();
       }
 

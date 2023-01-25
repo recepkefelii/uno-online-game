@@ -93,8 +93,7 @@ export class GameService {
       game.players.push(player)
       game.currentPlayers += 1;
   
-      const currentGame = await this.gameRepository.save(game)
-      console.log(currentGame);
+      await this.gameRepository.save(game)
       
       return {
         message: 'Successfully joined game',

@@ -22,7 +22,7 @@ export class GameService {
         name: ownerPlayer
       }
     })
-    const passwordHash = await bcrypt.hash(body.password,10)
+    const passwordHash = await bcrypt.hash(body.password, 10)
 
     if (body.isPrivate) {
       const game = new Game();
@@ -39,7 +39,7 @@ export class GameService {
       return this.gameRepository.find()
     }
 
-    if(!body.isPrivate){
+    if (!body.isPrivate) {
       const game = new Game();
 
       game.name = body.name;
@@ -63,8 +63,8 @@ export class GameService {
       },
       relations: ['players']
     })
-    if(game.private){
-      const checkPassword = await bcrypt.compare(game.password, body.password)
+    if (game.private) {
+      const checkPassword = await bcrypt.compare(body.password, game.password)
       if (!checkPassword) {
         return { error: "deneme" }
       }
@@ -75,27 +75,33 @@ export class GameService {
           }
         }
       )
-  
+
       const player = await this.playerRepository.findOne({
         where: {
           id: findByUsername.id
         }
       });
-  
-  
-      if (!player) return { error: 'Player not found' };
-  
+
+
+      if (!player) return {
+        error: 'Player not found'
+      };
+
       if (!game) return { error: 'Game not found' }
 
-  
+
       if (game.currentPlayers >= game.maxPlayers) return { error: 'Game is full' };
-  
+
+
       game.players.push(player)
       game.currentPlayers += 1;
-  
-      const currentGame = await this.gameRepository.save(game)
-      console.log(currentGame);
-      
+
+      if (game.maxPlayers === game.currentPlayers) {
+        game.status = true
+      }
+
+      await this.gameRepository.save(game)
+
       return {
         message: 'Successfully joined game',
         "user": {

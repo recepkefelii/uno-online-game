@@ -9,10 +9,11 @@ import { Player } from 'src/entities/player.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Game } from 'src/entities/game.entity';
 import * as bcrypt from "bcrypt";
+
 @Injectable()
 @WebSocketGateway({
   cors: {
-    origin: "*" 
+    origin: "*"
   }
 })
 export class GameGateway implements OnModuleInit {
@@ -30,9 +31,8 @@ export class GameGateway implements OnModuleInit {
 
   onModuleInit() {
     this.server.on('connection', async (socket) => {
-      const username = socket.handshake.query.username as string;
-      console.log(username);
-      // convert to only string
+      const username = socket.handshake.query.username as string;  // convert to only string
+
       if (!username) {
         socket.disconnect()
       }
@@ -42,20 +42,15 @@ export class GameGateway implements OnModuleInit {
           name: username
         }
       })
-      console.log(player);
 
 
       if (!player) {
-        console.log("player hatası");
-
         return socket.disconnect();
       }
 
-      const verifyUsername = await bcrypt.compare(username,player.hash)
+      const verifyUsername = await bcrypt.compare(username, player.hash)
 
       if (!verifyUsername) {
-        console.log("verifyUsername hatası");
-
         return socket.disconnect();
       }
 
@@ -121,5 +116,9 @@ export class GameGateway implements OnModuleInit {
     const allRooms = await this.GameRepository.find();
 
     this.server.emit('allRooms', allRooms);
+  }
+
+  cardDealing(): Promise<any> | void {
+    
   }
 }

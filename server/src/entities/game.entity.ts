@@ -26,6 +26,9 @@ export class Game {
   @Column()
   currentPlayers: number;
 
+  @Column({nullable: true})
+  status : boolean
+
   @OneToMany(type => Player, player => player.game, { cascade: true, })
   players: Player[];
 

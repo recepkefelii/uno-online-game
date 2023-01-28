@@ -15,7 +15,6 @@ export class RulesGateway{
 
     @SubscribeMessage("deneme")
     deneme(){
-      console.log("merhaba");
       
     }
 }

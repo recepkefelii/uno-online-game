@@ -19,7 +19,5 @@ export default class GameRules implements gameState {
     ) { }
 
     cardDealing() {
-        console.log("running");
-
     }
 }

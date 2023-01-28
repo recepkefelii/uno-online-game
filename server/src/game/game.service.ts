@@ -2,31 +2,23 @@ import { Injectable } from '@nestjs/common';
 import { createGameDto } from './dto/create.game-dto';
 import { joinGameDto } from './dto/join.game-dto';
 import { Game } from '../entities/game.entity';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Player } from 'src/entities/player.entity';
 import * as bcrypt from "bcrypt";
+import GameRules from './game.rules';
 
 @Injectable()
-export class GameService {
-  constructor(
-    @InjectRepository(Game)
-    private readonly gameRepository: Repository<Game>,
-    @InjectRepository(Player)
-    private readonly playerRepository: Repository<Player>
-  ) { }
-
+export class GameService extends GameRules  {
   async createGame(body: createGameDto, ownerPlayer: any) {
     const owner = await this.playerRepository.findOne({
       where: {
         name: ownerPlayer
       }
     })
-    const passwordHash = await bcrypt.hash(body.password, 10)
+    const salt = 10
+
+    const passwordHash = await bcrypt.hash(body.password, salt)
 
     if (body.isPrivate) {
       const game = new Game();
-
       game.name = body.name;
       game.maxPlayers = body.maxPlayers;
       game.password = passwordHash;
@@ -98,6 +90,7 @@ export class GameService {
 
       if (game.maxPlayers === game.currentPlayers) {
         game.status = true
+        this.cardDealing()     
       }
 
       await this.gameRepository.save(game)

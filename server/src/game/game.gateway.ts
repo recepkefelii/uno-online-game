@@ -117,8 +117,4 @@ export class GameGateway implements OnModuleInit {
 
     this.server.emit('allRooms', allRooms);
   }
-
-  cardDealing(): Promise<any> | void {
-    
-  }
 }

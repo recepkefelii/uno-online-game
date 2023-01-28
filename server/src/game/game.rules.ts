@@ -1,21 +1,23 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { Game } from "src/entities/game.entity";
 import { Player } from "src/entities/player.entity";
 import { Repository } from 'typeorm';
 
 
 interface gameState {
-    cardDealing(userId,gameId,) : void
+    cardDealing(): void
 }
 
-
 @Injectable()
-class GameRules implements gameState {
+export default class GameRules implements gameState {
     constructor(
+        @InjectRepository(Game)
+        public readonly gameRepository: Repository<Game>,
         @InjectRepository(Player)
-        private readonly playerRepository: Repository<Player>
-    ) {}
-    cardDealing(userId,gameId) {
-        
+        public readonly playerRepository: Repository<Player>
+    ) { }
+
+    cardDealing() {
     }
 }

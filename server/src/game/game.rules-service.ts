@@ -21,10 +21,10 @@ export default class GameRules implements GameState {
     public readonly moveRepository: Repository<Move>
   ) { }
   cardDealing(game: Game): void {
-
+    
     const players = game.players
 
-    const randomValue = <T>(enumObject: Record<string, T>): T => {
+    const randomCardType = <T>(enumObject: Record<string, T>): T => {
       const enumValues = Object.values(enumObject) as T[];
       const randomIndex = Math.floor(Math.random() * enumValues.length);
       return enumValues[randomIndex];
@@ -32,7 +32,7 @@ export default class GameRules implements GameState {
     
     for (let play of players) {
       const card = new Card()
-      card.color = randomValue(CardColor)
+      card.color = randomCardType(CardColor)
     }
 
   }

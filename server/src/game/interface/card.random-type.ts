@@ -1,3 +1,3 @@
-export interface RandomCardType<T> {
-    (enumObject: Record<string, T>): T;
+export interface RandomCardType {
+    randomCardType<T>(enumObject: Record<string, T>) : T
   }

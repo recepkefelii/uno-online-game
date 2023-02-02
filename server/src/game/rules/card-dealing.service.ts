@@ -5,11 +5,12 @@ import { Game } from "src/entities/game.entity";
 import { Move } from "src/entities/move.entity";
 import { Player } from "src/entities/player.entity";
 import { Repository } from 'typeorm';
-import { GameState, RandomCardType } from "./interface/index";
+import { GameState, RandomCardType } from "../interface/index";
 import { CardColor, CardValue } from "src/entities/card.entity";
+import { MainCard } from "../interface/main.card-type";
 
 @Injectable()
-export default class GameRules implements GameState, RandomCardType {
+export default class GameRules implements GameState, RandomCardType,MainCard {
   constructor(
     @InjectRepository(Game)
     public readonly gameRepository: Repository<Game>,
@@ -33,7 +34,7 @@ export default class GameRules implements GameState, RandomCardType {
 
     for (let player of players) {
       player.cards = []
-      for(let i = 0; i < numberOfCards; ++i){
+      for (let i = 0; i < numberOfCards; ++i) {
         const card = new Card();
         card.color = this.randomCardType(CardColor)
         card.value = this.randomCardType(CardValue)
@@ -44,6 +45,13 @@ export default class GameRules implements GameState, RandomCardType {
         await this.cardRepository.save(card)
       }
     }
-
   }
+  mainCard(game:Game) {
+    const card = new Card()
+    card.value = this.randomCardType(CardValue)
+    card.color = this.randomCardType(CardColor)
+    card.game = game
+    card.isMain = true
+    this.cardRepository.save(card)
+}
 }

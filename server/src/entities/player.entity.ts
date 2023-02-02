@@ -17,7 +17,7 @@ export class Player {
   @ManyToOne(type => Game, game => game.players)
   game: Game;
 
-  @OneToMany(type => Card, card => card.player)
+  @OneToMany(type => Card, card => card.player,)
   cards: Card[];
 
   @OneToMany(type => Move, move => move.player)

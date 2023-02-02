@@ -26,15 +26,15 @@ export class Game {
   @Column()
   currentPlayers: number;
 
-  @Column({nullable: true})
+  @Column({nullable: true, default: false})
   status : boolean
 
-  @OneToMany(type => Player, player => player.game, { cascade: true, })
+  @OneToMany(type => Player, player => player.game,{ cascade: ["remove"] })
   players: Player[];
 
-  @OneToMany(type => Card, card => card.game, { cascade: true })
+  @OneToMany(type => Card, card => card.game,{ cascade: ["remove"] })
   cards: Card[];
 
-  @OneToMany(type => Move, move => move.game, { cascade: true })
+  @OneToMany(type => Move, move => move.game,{ cascade: ["remove"] })
   moves: Move[];
 }

@@ -46,10 +46,15 @@ export class Card {
   })
   value: CardValue;
 
-  @ManyToOne(type => Game, game => game.cards)
+  @ManyToOne(type => Game, game => game.cards,{
+    onDelete: "CASCADE", orphanedRowAction: 'delete'
+})
   game: Game;
 
-  @ManyToOne(type => Player, player => player.cards)
+  @ManyToOne(type => Player, player => player.cards,
+    {
+      onDelete: "CASCADE", orphanedRowAction: 'delete'
+  })
   player: Player;
 
   @ManyToOne(type => Move, move => move.card)

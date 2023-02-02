@@ -26,7 +26,7 @@ export class GameGateway implements OnModuleInit {
     private readonly playerRepository: Repository<Player>,
 
     @InjectRepository(Game)
-    private readonly GameRepository: Repository<Game>
+    private readonly GameRepository: Repository<Game>,
   ) { }
 
   onModuleInit() {
@@ -55,37 +55,36 @@ export class GameGateway implements OnModuleInit {
       }
 
       socket.on('disconnect', async () => {
-        const fetchUser = await this.playerRepository.findOne({
-          where: { name: username }, relations: {
-            game: true
-          }
+        const user = await this.playerRepository.findOne({
+          where: { name: username },
+          relations: ['game']
         });
-        if (fetchUser.game && fetchUser.game.id) {
-          const checkGames = await this.GameRepository.findOne({
-            where: {
-              id: fetchUser.game.id
-            },
+        user.cards
+
+        if (user.game) {
+          const game = await this.GameRepository.findOne({
+            where: { id: user.game.id },
             relations: {
+              cards: true,
               players: true
             }
-          })
+          });
 
-          checkGames.currentPlayers -= 1
-          await this.GameRepository.save(checkGames)
+          game.currentPlayers--;
+          await this.GameRepository.save(game);
 
-          if (fetchUser) {
-            fetchUser.game = null;
-            const currentPlayers = await this.playerRepository.save(fetchUser);
-            if (checkGames.currentPlayers == 0) {
-              socket.broadcast.emit('onDeleteGame', {
-                "id": checkGames.name,
-                "name": checkGames.name
-              })
-              this.GameRepository.remove(checkGames)
-            }
+          user.game = null;
+          user.cards = null
+          await this.playerRepository.save(user);
+
+          if (game.currentPlayers === 0) {
+            socket.broadcast.emit('onDeleteGame', {
+              id: game.id,
+              name: game.name
+            });
+            await this.GameRepository.remove(game);
           }
         }
-
       });
     });
 

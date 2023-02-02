@@ -3,10 +3,10 @@ import { createGameDto } from './dto/create.game-dto';
 import { joinGameDto } from './dto/join.game-dto';
 import { Game } from '../entities/game.entity';
 import * as bcrypt from "bcrypt";
-import GameRules from './game.rules-service';
+import GameRules from './rules/card-dealing.service';
 
 @Injectable()
-export class GameService extends GameRules  {
+export class GameService extends GameRules {
   async createGame(body: createGameDto, ownerPlayer: any) {
     const owner = await this.playerRepository.findOne({
       where: {
@@ -48,7 +48,6 @@ export class GameService extends GameRules  {
   }
 
 
-  // Join Game
   async joinGame(body: joinGameDto, socket: any) {
     const gameId = body.gameId
     const game = await this.gameRepository.findOne({
@@ -92,7 +91,8 @@ export class GameService extends GameRules  {
 
       if (game.maxPlayers === game.currentPlayers) {
         game.status = true
-        await this.cardDealing(game) 
+        await this.cardDealing(game)
+        this.mainCard(game)
       }
 
       await this.gameRepository.save(game)

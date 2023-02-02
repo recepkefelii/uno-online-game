@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
+import { MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import { Server } from "socket.io"
 
 
@@ -9,12 +9,12 @@ import { Server } from "socket.io"
     origin: "*"
   }
 })
-export class RulesGateway{
-    @WebSocketServer() server : Server
+export class RulesGateway {
+  @WebSocketServer() server: Server
 
 
-    @SubscribeMessage("deneme")
-    deneme(){
-      
-    }
+  @SubscribeMessage("deneme")
+  deneme(@MessageBody() body: any) {
+    console.log(body);
+  }
 }

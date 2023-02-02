@@ -34,6 +34,11 @@ export class Card {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column({type: 'boolean',
+  default: false,
+})
+  isMain: boolean
+
   @Column({
     type: 'enum',
     enum: CardColor,

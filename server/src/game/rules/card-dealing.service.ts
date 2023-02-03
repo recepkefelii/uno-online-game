@@ -10,7 +10,7 @@ import { CardColor, CardValue } from "src/entities/card.entity";
 import { MainCard } from "../interface/main.card-type";
 
 @Injectable()
-export default class GameRules implements GameState, RandomCardType,MainCard {
+export default class GameRules implements GameState, RandomCardType, MainCard {
   constructor(
     @InjectRepository(Game)
     public readonly gameRepository: Repository<Game>,
@@ -21,6 +21,7 @@ export default class GameRules implements GameState, RandomCardType,MainCard {
     @InjectRepository(Move)
     public readonly moveRepository: Repository<Move>
   ) { }
+
   randomCardType = <T>(enumObject: Record<string, T>): T => {
     const enumValues = Object.values(enumObject) as T[];
     const randomIndex = Math.floor(Math.random() * enumValues.length);
@@ -46,12 +47,12 @@ export default class GameRules implements GameState, RandomCardType,MainCard {
       }
     }
   }
-  mainCard(game:Game) {
+  mainCard(game: Game) {
     const card = new Card()
     card.value = this.randomCardType(CardValue)
     card.color = this.randomCardType(CardColor)
     card.game = game
     card.isMain = true
     this.cardRepository.save(card)
-}
+  }
 }

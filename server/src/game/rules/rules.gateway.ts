@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
-import { MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
+import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import { Server } from "socket.io"
+import { CheckMatch } from "./service/match/check-match.service";
 
 
 @Injectable()
@@ -10,11 +11,12 @@ import { Server } from "socket.io"
   }
 })
 export class RulesGateway {
+  constructor(private readonly checkMatch: CheckMatch) { }
   @WebSocketServer() server: Server
 
 
-  @SubscribeMessage("deneme")
-  deneme(@MessageBody() body: any) {
-    console.log(body);
+  @SubscribeMessage('play')
+  async playCard(@MessageBody() body: any, @ConnectedSocket() socket: any) {
+    const match = await this.checkMatch.checkUserMatch(socket)
   }
 }

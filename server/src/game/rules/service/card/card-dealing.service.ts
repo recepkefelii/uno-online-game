@@ -5,9 +5,9 @@ import { Game } from "src/entities/game.entity";
 import { Move } from "src/entities/move.entity";
 import { Player } from "src/entities/player.entity";
 import { Repository } from 'typeorm';
-import { GameState, RandomCardType } from "../interface/index";
+import { GameState, RandomCardType} from "src/game/rules/service/interface";
 import { CardColor, CardValue } from "src/entities/card.entity";
-import { MainCard } from "../interface/main.card-type";
+import { MainCard } from "src/game/rules/service/interface/main.card-type";
 
 @Injectable()
 export default class GameRules implements GameState, RandomCardType, MainCard {

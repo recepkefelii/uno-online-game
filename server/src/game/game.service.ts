@@ -3,7 +3,7 @@ import { createGameDto } from './dto/create.game-dto';
 import { joinGameDto } from './dto/join.game-dto';
 import { Game } from '../entities/game.entity';
 import * as bcrypt from "bcrypt";
-import GameRules from './rules/card-dealing.service';
+import GameRules from './rules/service/card/card-dealing.service';
 
 @Injectable()
 export class GameService extends GameRules {

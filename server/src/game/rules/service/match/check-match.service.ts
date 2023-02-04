@@ -1,10 +1,23 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, } from "@nestjs/common";
+import { WsException } from "@nestjs/websockets";
 import GameRules from "../card/card-dealing.service";
 
 @Injectable()
-export class CheckMatch extends GameRules {
-    checkUserMatch(socket: any) {
-        const username = socket.handshake.query.username
-        return username;
+export class CheckMatchService extends GameRules {
+    async checkUserMatch(username: string) {
+        const user = await this.playerRepository.findOne({
+            where: {
+                name: username
+            },
+            relations: {
+                game: true
+            }
+        });
+
+        if (!user || !user.game || !user.game.id) {
+            throw new WsException("User or user's game not found",);
+        }
+
+        return user.game.id;
     }
 }

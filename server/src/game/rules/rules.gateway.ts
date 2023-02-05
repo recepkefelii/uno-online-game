@@ -23,7 +23,7 @@ export class RulesGateway {
     try {
       const username = socket.handshake.query.username;
       const match = await this.checkMatch.checkUserMatch(username);
-      const cards = await this.rulesService.getCards(match, username)
+      const cards = await this.rulesService.getPlayerCards(match, username)
       this.server.emit('play',cards)
     } catch (error) {
       throw new WsException(error.message);

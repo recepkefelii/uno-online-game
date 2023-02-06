@@ -11,10 +11,10 @@ export class Game {
   @Column()
   name: string;
 
-  @Column()
+  @Column({ nullable: true })
   password: string
 
-  @Column({default: false,nullable: true})
+  @Column({ default: false, nullable: true })
   private: boolean;
 
   @Column()
@@ -26,15 +26,15 @@ export class Game {
   @Column()
   currentPlayers: number;
 
-  @Column({nullable: true, default: false})
-  status : boolean
+  @Column({ nullable: true, default: false })
+  status: boolean
 
-  @OneToMany(type => Player, player => player.game,{ cascade: ["remove"] })
+  @OneToMany(type => Player, player => player.game, { cascade: ["remove"] })
   players: Player[];
 
-  @OneToMany(type => Card, card => card.game,{ cascade: ["remove"] })
+  @OneToMany(type => Card, card => card.game, { cascade: ["remove"] })
   cards: Card[];
 
-  @OneToMany(type => Move, move => move.game,{ cascade: ["remove"] })
+  @OneToMany(type => Move, move => move.game, { cascade: ["remove"] })
   moves: Move[];
 }

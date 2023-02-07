@@ -7,12 +7,14 @@ on:
     branches: [ "dev" ]
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+      - uses: actions/checkout@v3
+      - name: Set up Docker Uno Game
+        uses: docker/setup-docker@v2
+      - name: Start the services with Docker Compose
+        run: |
+          docker-compose build
+          docker-compose up -d

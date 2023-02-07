@@ -48,4 +48,8 @@ export class RulesGateway {
     }
   }
 
+  async playerMakemMove() {
+    
+  }
+
 }

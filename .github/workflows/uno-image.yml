@@ -12,9 +12,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - name: Set up Docker Uno Game
-        uses: docker/setup-docker@v2
-      - name: Start the services with Docker Compose
+      - name: docker build
         run: |
-          docker-compose build
-          docker-compose up -d
+          docker compose up

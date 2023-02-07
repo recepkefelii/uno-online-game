@@ -1,4 +1,4 @@
-import { IsInt, IsNotEmpty, IsString } from "class-validator"
+import { IsBoolean, IsEmpty, IsInt, IsNotEmpty, IsString } from "class-validator"
 import { CardColor, CardValue } from "src/entities/card.entity"
 
 export class CardsDto {
@@ -13,4 +13,11 @@ export class CardsDto {
     @IsString()
     @IsNotEmpty()
     cardColor: CardColor
+}
+
+
+export class GetCards {
+    @IsBoolean()
+    @IsEmpty()
+    isMain: boolean
 }

@@ -53,5 +53,9 @@ export class Rules extends GameRules {
         return mainCard;
     }
 
+    async playerMakemMove(){
+        
+    }
+
 
 }

@@ -8,8 +8,11 @@ export class Player {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({unique: true})
+  @Column({ unique: true })
   name: string;
+
+  @Column()
+  currentTurn: boolean
 
   @Column({ nullable: true, })
   hash: string

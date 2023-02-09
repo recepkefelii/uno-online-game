@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { WsException } from "@nestjs/websockets";
-import { GetCards } from "./dto/cards.dto";
+import { Card } from "src/entities/card.entity";
+import { CardsDto, GetCards } from "./dto/cards.dto";
 import GameRules from "./service/card/card-dealing.service";
 
 @Injectable()
@@ -53,8 +54,8 @@ export class Rules extends GameRules {
         return mainCard;
     }
 
-    async playerMakemMove(){
-        
+    async playerMakeMove(currentCard:Card[],gameId:number,username:string,body:CardsDto){
+        this.randomPlayer(gameId)
     }
 
 

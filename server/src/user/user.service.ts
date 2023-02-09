@@ -17,6 +17,7 @@ export class UserService {
         const hashName = await bcrypt.hash(body.name, saltRounds);
         player.hash = hashName
         player.name = body.name
+        player.currentTurn = false
 
         const user = await this.playerRepository.save(player)
         return { nickname: user.name }

@@ -2,6 +2,8 @@ import { Body, Injectable } from "@nestjs/common";
 import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer, WsException } from "@nestjs/websockets";
 import { Socket } from "dgram";
 import { Server } from "socket.io"
+import { Card } from "src/entities/card.entity";
+import { CardsDto } from "./dto/cards.dto";
 import { Rules } from "./rules.service";
 import { CheckMatchService } from "./service/match/check-match.service";
 
@@ -29,7 +31,8 @@ export class RulesGateway {
     try {
       const [gameId, username] = await this.getGameIdAndUsername(socket);
       const cards = await this.rulesService.getPlayerCards(gameId, username)
-      this.server.emit('play', cards)
+      const uniqueEmit = gameId.toString()
+      this.server.emit(uniqueEmit, cards)
       return cards
     } catch (error) {
       throw new WsException(error.message);
@@ -48,8 +51,11 @@ export class RulesGateway {
     }
   }
 
-  async playerMakemMove() {
-    
+  @SubscribeMessage("move")
+  async playerMakemMove(@MessageBody() body: CardsDto, @ConnectedSocket() socket: any) {
+    const [gameId, username] = await this.getGameIdAndUsername(socket);
+    const currentCard = await this.getCards(socket)
+    this.rulesService.playerMakeMove(currentCard, gameId, username, body)
   }
 
 }

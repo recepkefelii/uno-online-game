@@ -9,7 +9,7 @@ export class CardsDto {
     @IsString()
     @IsNotEmpty()
     cardValue: CardValue
-    
+
     @IsString()
     @IsNotEmpty()
     cardColor: CardColor

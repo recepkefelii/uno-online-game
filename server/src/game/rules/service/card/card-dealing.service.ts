@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Card } from "src/entities/card.entity";
+import { Card, MainCardValue } from "src/entities/card.entity";
 import { Game } from "src/entities/game.entity";
 import { Move } from "src/entities/move.entity";
 import { Player } from "src/entities/player.entity";
@@ -22,11 +22,24 @@ export default class GameRules implements GameState, RandomCardType, MainCard {
     public readonly moveRepository: Repository<Move>
   ) { }
 
+
   randomCardType = <T>(enumObject: Record<string, T>): T => {
     const enumValues = Object.values(enumObject) as T[];
     const randomIndex = Math.floor(Math.random() * enumValues.length);
     return enumValues[randomIndex];
   };
+
+  async cardControl(card: Card, mainCard: Card) {
+    if (mainCard.color === card.color || mainCard.value === card.value) {
+      card.move = mainCard.move
+      card.player = mainCard.player
+      card.game = mainCard.game
+      mainCard = card;
+      return mainCard;
+    } else {
+      throw new Error("This move is against the rules");
+    }
+  }
 
   async randomPlayer(gameId: number) {
     const game = await this.gameRepository.findOne({
@@ -66,7 +79,7 @@ export default class GameRules implements GameState, RandomCardType, MainCard {
   }
   mainCard(game: Game) {
     const card = new Card()
-    card.value = this.randomCardType(CardValue)
+    card.value = this.randomCardType(MainCardValue)
     card.color = this.randomCardType(CardColor)
     card.game = game
     card.isMain = true

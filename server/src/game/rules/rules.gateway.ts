@@ -3,7 +3,7 @@ import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSo
 import { Socket } from "dgram";
 import { Server } from "socket.io"
 import { Card } from "src/entities/card.entity";
-import { CardsDto } from "./dto/cards.dto";
+import { CardId } from "./dto/cards.dto";
 import { Rules } from "./rules.service";
 import { CheckMatchService } from "./service/match/check-match.service";
 
@@ -52,10 +52,14 @@ export class RulesGateway {
   }
 
   @SubscribeMessage("move")
-  async playerMakemMove(@MessageBody() body: CardsDto, @ConnectedSocket() socket: any) {
+  async playerMakemMove(@MessageBody() body: CardId, @ConnectedSocket() socket: any) {
     const [gameId, username] = await this.getGameIdAndUsername(socket);
     const currentCard = await this.getCards(socket)
-    this.rulesService.playerMakeMove(currentCard, gameId, username, body)
+    const mainCard = await this.getMainCards(socket)
+    const card = this.rulesService.playerMakeMove(currentCard, gameId, username, body.id, mainCard)
+    const uniqueEmit = gameId.toString()
+    this.server.emit(uniqueEmit, card)
+    return card
   }
 
 }

@@ -15,9 +15,9 @@ export class CheckMatchService extends GameRules {
         });
 
         if (!user || !user.game || !user.game.id) {
+            this.logger.log(`User ${username} is not in any game`)
             throw new WsException("User or user's game not found",);
         }
-
         return user.game.id;
     }
 }

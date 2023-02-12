@@ -3,7 +3,7 @@ import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSo
 import { Socket } from "dgram";
 import { Server } from "socket.io"
 import { Card } from "src/entities/card.entity";
-import { CardsDto } from "./dto/cards.dto";
+import { CardId } from "./dto/cards.dto";
 import { Rules } from "./rules.service";
 import { CheckMatchService } from "./service/match/check-match.service";
 
@@ -43,7 +43,7 @@ export class RulesGateway {
   async getMainCards(@ConnectedSocket() socket: any) {
     try {
       const [gameId] = await this.getGameIdAndUsername(socket);
-      const mainCard = await this.rulesService.getMainCards(gameId)
+      const mainCard = await this.rulesService.getMainCard(gameId)
       this.server.emit('play', mainCard)
       return mainCard
     } catch (error) {
@@ -52,10 +52,14 @@ export class RulesGateway {
   }
 
   @SubscribeMessage("move")
-  async playerMakemMove(@MessageBody() body: CardsDto, @ConnectedSocket() socket: any) {
+  async playerMakemMove(@MessageBody() body: CardId, @ConnectedSocket() socket: any) {
     const [gameId, username] = await this.getGameIdAndUsername(socket);
-    const currentCard = await this.getCards(socket)
-    this.rulesService.playerMakeMove(currentCard, gameId, username, body)
+    const cards = await this.getCards(socket)
+    const mainCard = await this.getMainCards(socket)
+    this.rulesService.playerMakeMove(cards, gameId, username, body.id, mainCard)
+    const currentCards = await this.getMainCards(socket)
+    const uniqueEmit = gameId.toString()
+    this.server.emit(uniqueEmit, currentCards)
   }
 
 }

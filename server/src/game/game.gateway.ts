@@ -1,7 +1,7 @@
 import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { GameService } from './game.service';
 import { createGameDto } from './dto/create.game-dto';
-import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { Server, } from 'socket.io';
 import { joinGameDto } from './dto/join.game-dto';
 import { Repository } from 'typeorm';
@@ -18,6 +18,8 @@ import * as bcrypt from "bcrypt";
 })
 export class GameGateway implements OnModuleInit {
 
+  logger: Logger
+
   @WebSocketServer()
   server: Server
 
@@ -27,13 +29,18 @@ export class GameGateway implements OnModuleInit {
 
     @InjectRepository(Game)
     private readonly GameRepository: Repository<Game>,
-  ) { }
+  ) {
+    this.logger = new Logger(GameGateway.name)
+  }
 
   onModuleInit() {
     this.server.on('connection', async (socket) => {
+      this.logger.verbose(`Client socket with id ${socket.id} is trying to connect`)
       const username = socket.handshake.query.username as string;  // convert to only string
 
       if (!username) {
+        this.logger.log(`Username is not entered as parameter.
+        The client with id ${socket.id} could not be allowed to connect socket`)
         socket.disconnect()
       }
 
@@ -45,16 +52,19 @@ export class GameGateway implements OnModuleInit {
 
 
       if (!player) {
+        this.logger.warn(`Socket connection not allowed because there is no user named ${player.name}`)
         return socket.disconnect();
       }
 
       const verifyUsername = await bcrypt.compare(username, player.hash)
 
       if (!verifyUsername) {
+        this.logger.warn(`Could not decode the hash of ${player.name}`)
         return socket.disconnect();
       }
-
+      this.logger.verbose(`User with id ${socket.id} connected socket successfully`)
       socket.on('disconnect', async () => {
+        this.logger.warn(`Disconnect event triggered by client with id ${socket.id}`)
         const user = await this.playerRepository.findOne({
           where: { name: username },
           relations: ['game']
@@ -83,6 +93,7 @@ export class GameGateway implements OnModuleInit {
               name: game.name
             });
             await this.GameRepository.remove(game);
+            this.logger.log(`Game named ${game.name} has been deleted successfully`)
           }
         }
       });

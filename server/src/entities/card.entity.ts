@@ -8,7 +8,6 @@ export enum CardColor {
   YELLOW = 'yellow',
   GREEN = 'green',
   BLUE = 'blue',
-  WILD = 'wild',
 }
 
 export enum CardValue {

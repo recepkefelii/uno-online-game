@@ -31,7 +31,6 @@ export default class GameRules implements GameState, RandomCardType, MainCard {
   randomCardType = <T>(enumObject: Record<string, T>): T => {
     const enumValues = Object.values(enumObject) as T[];
     const randomIndex = Math.floor(Math.random() * enumValues.length);
-    this.logger.log('Random card created')
     return enumValues[randomIndex];
   };
 
@@ -41,10 +40,11 @@ export default class GameRules implements GameState, RandomCardType, MainCard {
       card.player = mainCard.player
       card.game = mainCard.game
       mainCard = card;
+      this.logger.verbose(`Card check successful, Card: Id ${card.id} Color ${card.color} Value ${card.value} `)
       return mainCard;
     } else {
       this.logger.error('A Card was played that did not comply with the rules of the game')
-      throw new Error("This move is against the rules");
+      throw new WsException("This move is against the rules");
     }
   }
 
@@ -81,8 +81,8 @@ export default class GameRules implements GameState, RandomCardType, MainCard {
         card.player = player
         await this.playerRepository.save(player)
         await this.cardRepository.save(card)
-        this.logger.log(`The cards of the game with id ${game.id} were dealing`)
       }
+      this.logger.log(`The cards of the game with id ${game.id} were dealing`)
     }
   }
   mainCard(game: Game) {

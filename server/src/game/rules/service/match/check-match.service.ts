@@ -18,7 +18,6 @@ export class CheckMatchService extends GameRules {
             this.logger.log(`User ${username} is not in any game`)
             throw new WsException("User or user's game not found",);
         }
-        this.logger.log(`Found in which room ${username} is`)
         return user.game.id;
     }
 }

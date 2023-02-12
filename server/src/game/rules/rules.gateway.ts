@@ -43,7 +43,7 @@ export class RulesGateway {
   async getMainCards(@ConnectedSocket() socket: any) {
     try {
       const [gameId] = await this.getGameIdAndUsername(socket);
-      const mainCard = await this.rulesService.getMainCards(gameId)
+      const mainCard = await this.rulesService.getMainCard(gameId)
       this.server.emit('play', mainCard)
       return mainCard
     } catch (error) {
@@ -57,7 +57,7 @@ export class RulesGateway {
     const cards = await this.getCards(socket)
     const mainCard = await this.getMainCards(socket)
     this.rulesService.playerMakeMove(cards, gameId, username, body.id, mainCard)
-    const currentCards = await this.getCards(socket)
+    const currentCards = await this.getMainCards(socket)
     const uniqueEmit = gameId.toString()
     this.server.emit(uniqueEmit, currentCards)
   }

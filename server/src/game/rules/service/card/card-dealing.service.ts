@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Card, MainCardValue } from "src/entities/card.entity";
 import { Game } from "src/entities/game.entity";
@@ -8,9 +8,12 @@ import { Repository } from 'typeorm';
 import { GameState, RandomCardType } from "src/game/rules/service/interface";
 import { CardColor, CardValue } from "src/entities/card.entity";
 import { MainCard } from "src/game/rules/service/interface/main.card-type";
+import { WsException } from "@nestjs/websockets";
 
 @Injectable()
 export default class GameRules implements GameState, RandomCardType, MainCard {
+  logger: Logger
+
   constructor(
     @InjectRepository(Game)
     public readonly gameRepository: Repository<Game>,
@@ -19,13 +22,16 @@ export default class GameRules implements GameState, RandomCardType, MainCard {
     @InjectRepository(Card)
     public readonly cardRepository: Repository<Card>,
     @InjectRepository(Move)
-    public readonly moveRepository: Repository<Move>
-  ) { }
+    public readonly moveRepository: Repository<Move>,
+  ) {
+    this.logger = new Logger(GameRules.name)
+  }
 
 
   randomCardType = <T>(enumObject: Record<string, T>): T => {
     const enumValues = Object.values(enumObject) as T[];
     const randomIndex = Math.floor(Math.random() * enumValues.length);
+    this.logger.log('Random card created')
     return enumValues[randomIndex];
   };
 
@@ -37,6 +43,7 @@ export default class GameRules implements GameState, RandomCardType, MainCard {
       mainCard = card;
       return mainCard;
     } else {
+      this.logger.error('A Card was played that did not comply with the rules of the game')
       throw new Error("This move is against the rules");
     }
   }
@@ -74,6 +81,7 @@ export default class GameRules implements GameState, RandomCardType, MainCard {
         card.player = player
         await this.playerRepository.save(player)
         await this.cardRepository.save(card)
+        this.logger.log(`The cards of the game with id ${game.id} were dealing`)
       }
     }
   }
@@ -84,5 +92,6 @@ export default class GameRules implements GameState, RandomCardType, MainCard {
     card.game = game
     card.isMain = true
     this.cardRepository.save(card)
+    this.logger.log(`The main cart of the game with id ${game.id} has been created`)
   }
 }

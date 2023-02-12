@@ -54,12 +54,12 @@ export class RulesGateway {
   @SubscribeMessage("move")
   async playerMakemMove(@MessageBody() body: CardId, @ConnectedSocket() socket: any) {
     const [gameId, username] = await this.getGameIdAndUsername(socket);
-    const currentCard = await this.getCards(socket)
+    const cards = await this.getCards(socket)
     const mainCard = await this.getMainCards(socket)
-    const card = this.rulesService.playerMakeMove(currentCard, gameId, username, body.id, mainCard)
+    this.rulesService.playerMakeMove(cards, gameId, username, body.id, mainCard)
+    const currentCards = await this.getCards(socket)
     const uniqueEmit = gameId.toString()
-    this.server.emit(uniqueEmit, card)
-    return card
+    this.server.emit(uniqueEmit, currentCards)
   }
 
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { createGameDto } from './dto/create.game-dto';
 import { joinGameDto } from './dto/join.game-dto';
 import { Game } from '../entities/game.entity';
@@ -42,6 +42,8 @@ export class GameService extends GameRules {
       game.players = [owner]
 
       await this.gameRepository.save(game);
+      this.logger.log(`ID ${game.id} game successfully created`)
+      this.logger.log(`User named ${owner.name} successfully entered the room created`)
       return this.gameRepository.find()
     }
   }
@@ -85,7 +87,7 @@ export class GameService extends GameRules {
     }
 
     await this.gameRepository.save(game);
-
+    this.logger.log(`User named ${player.name} successfully logged into room ${game.name}.`)
     return {
       message: 'Successfully joined game',
       user: {

@@ -87,7 +87,7 @@ export class Rules extends GameRules {
 
         findMainCard.color = changeCard.color
         findMainCard.value = changeCard.value
-        this.gameRepository.save(findMainCard)
+        this.cardRepository.save(findMainCard)
         return findMainCard
     }
 }

@@ -1,6 +1,7 @@
 import { Body, Injectable } from "@nestjs/common";
 import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer, WsException } from "@nestjs/websockets";
 import { Socket } from "dgram";
+import { emit } from "process";
 import { Server } from "socket.io"
 import { Card } from "src/entities/card.entity";
 import { CardId } from "./dto/cards.dto";
@@ -27,12 +28,14 @@ export class RulesGateway {
   }
 
   @SubscribeMessage('getCards')
-  async getCards(@ConnectedSocket() socket: any) {
+  async getCards(@ConnectedSocket() socket: any, emit: boolean) {
     try {
       const [gameId, username] = await this.getGameIdAndUsername(socket);
       const cards = await this.rulesService.getPlayerCards(gameId, username)
       const uniqueEmit = gameId.toString()
-      this.server.emit(uniqueEmit, cards)
+      if (!emit) {
+        this.server.emit(uniqueEmit, cards)
+      }
       return cards
     } catch (error) {
       throw new WsException(error.message);
@@ -40,11 +43,13 @@ export class RulesGateway {
   }
 
   @SubscribeMessage('getMainCard')
-  async getMainCards(@ConnectedSocket() socket: any) {
+  async getMainCards(@ConnectedSocket() socket: any, emit: boolean) {
     try {
       const [gameId] = await this.getGameIdAndUsername(socket);
       const mainCard = await this.rulesService.getMainCard(gameId)
-      this.server.emit('play', mainCard)
+      if (!emit) {
+        this.server.emit('play', mainCard)
+      }
       return mainCard
     } catch (error) {
       throw new WsException(error.message);
@@ -54,11 +59,12 @@ export class RulesGateway {
   @SubscribeMessage("move")
   async playerMakemMove(@MessageBody() body: CardId, @ConnectedSocket() socket: any) {
     const [gameId, username] = await this.getGameIdAndUsername(socket);
-    const cards = await this.getCards(socket)
-    const mainCard = await this.getMainCards(socket)
-    this.rulesService.playerMakeMove(cards, gameId, username, body.id, mainCard)
-    const currentCards = await this.getMainCards(socket)
+    const cards = await this.getCards(socket, true)
+    const mainCard = await this.getMainCards(socket, true)
+    const error = await this.rulesService.playerMakeMove(cards, gameId, username, body.id, mainCard)
+    const currentCards = await this.getCards(socket, true)
     const uniqueEmit = gameId.toString()
+    if (error) { return this.server.emit(uniqueEmit, error) }
     this.server.emit(uniqueEmit, currentCards)
   }
 

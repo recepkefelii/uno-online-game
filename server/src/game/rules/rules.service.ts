@@ -52,7 +52,7 @@ export class Rules extends GameRules {
 
         if (!card) {
             this.logger.error("This card is not in your hand")
-            throw new WsException("This card is not in your hand")
+            return {"error": 'This card is not in your hand'};
         }
 
         const changeCard = await this.cardControl(card, mainCard)
@@ -71,6 +71,6 @@ export class Rules extends GameRules {
         findMainCard.color = changeCard.color
         findMainCard.value = changeCard.value
         this.cardRepository.save(findMainCard)
-        return findMainCard
+        this.cardRepository.remove(changeCard)
     }
 }

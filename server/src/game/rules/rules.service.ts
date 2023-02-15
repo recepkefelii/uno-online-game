@@ -52,7 +52,7 @@ export class Rules extends GameRules {
 
         if (!card) {
             this.logger.error("This card is not in your hand")
-            return {"error": 'This card is not in your hand'};
+            return { "error": 'This card is not in your hand' };
         }
 
         const changeCard = await this.cardControl(card, mainCard)
@@ -72,5 +72,10 @@ export class Rules extends GameRules {
         findMainCard.value = changeCard.value
         this.cardRepository.save(findMainCard)
         this.cardRepository.remove(changeCard)
+    }
+
+    async getNewCard(username: string, gameId: number) {
+        const game = this.newGenerateCard(gameId, username)
+        return game
     }
 }

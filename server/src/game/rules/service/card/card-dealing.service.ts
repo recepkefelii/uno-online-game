@@ -9,7 +9,7 @@ import { GameState, RandomCardType } from "src/game/rules/service/interface";
 import { CardColor, CardValue } from "src/entities/card.entity";
 import { MainCard } from "src/game/rules/service/interface/main.card-type";
 import { WsException } from "@nestjs/websockets";
-
+import * as _ from 'lodash';
 @Injectable()
 export default class GameRules implements GameState, RandomCardType, MainCard {
   logger: Logger
@@ -48,23 +48,6 @@ export default class GameRules implements GameState, RandomCardType, MainCard {
     }
   }
 
-  async randomPlayer(gameId: number) {
-    const game = await this.gameRepository.findOne({
-      where: {
-        id: gameId,
-      },
-      relations: {
-        players: true
-      }
-    })
-
-    const randomOnePlayer = Object.values(game.players)[Math.floor(Math.random() * Object.values(game.players).length)]
-    randomOnePlayer.currentTurn = true
-    await this.playerRepository.save(randomOnePlayer)
-    return randomOnePlayer.id
-  }
-
-
   async cardDealing(game: Game): Promise<void> {
 
     const players = game.players
@@ -93,5 +76,31 @@ export default class GameRules implements GameState, RandomCardType, MainCard {
     card.isMain = true
     this.cardRepository.save(card)
     this.logger.log(`The main cart of the game with id ${game.id} has been created`)
+  }
+
+
+  async newGenerateCard(gameId: number, username: string) {
+
+    const game = await this.gameRepository.findOne({
+      where: {
+        id: gameId
+      }
+    })
+
+    const player = await this.playerRepository.findOne(
+      {
+        where: {
+          name: username
+        }
+      }
+    )
+
+    const card = new Card()
+    card.color = this.randomCardType(CardColor)
+    card.value = this.randomCardType(CardValue)
+    card.game = game
+    card.player = player
+    const generateCard = this.cardRepository.save(card)
+    return generateCard
   }
 }

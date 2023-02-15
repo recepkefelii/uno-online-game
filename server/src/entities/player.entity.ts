@@ -11,9 +11,6 @@ export class Player {
   @Column({ unique: true })
   name: string;
 
-  @Column()
-  currentTurn: boolean
-
   @Column({ nullable: true, })
   hash: string
 

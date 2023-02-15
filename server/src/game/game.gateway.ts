@@ -63,6 +63,9 @@ export class GameGateway implements OnModuleInit {
         return socket.disconnect();
       }
       this.logger.verbose(`User with id ${socket.id} connected socket successfully`)
+
+
+      //Disconnect
       socket.on('disconnect', async () => {
         this.logger.warn(`Disconnect event triggered by client with id ${socket.id}`)
         const user = await this.playerRepository.findOne({

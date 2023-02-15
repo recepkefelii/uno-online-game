@@ -68,4 +68,12 @@ export class RulesGateway {
     this.server.emit(uniqueEmit, currentCards)
   }
 
+  @SubscribeMessage('getCard')
+  async getCard(@ConnectedSocket() socket: any) {
+    const [gameId, username] = await this.getGameIdAndUsername(socket)
+    const newCreateCard = await this.rulesService.getNewCard(username, gameId)
+    const uniqueEmit = gameId.toString()
+    this.server.emit(uniqueEmit, newCreateCard)
+  }
+
 }

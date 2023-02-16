@@ -52,15 +52,14 @@ export class GameGateway implements OnModuleInit {
 
 
       if (!player) {
-        this.logger.warn(`Socket connection not allowed because there is no user named ${player.name}`)
-        return socket.disconnect();
+        socket.disconnect();
       }
 
       const verifyUsername = await bcrypt.compare(username, player.hash)
 
       if (!verifyUsername) {
         this.logger.warn(`Could not decode the hash of ${player.name}`)
-        return socket.disconnect();
+        socket.disconnect();
       }
       this.logger.verbose(`User with id ${socket.id} connected socket successfully`)
 

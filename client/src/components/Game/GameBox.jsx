@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 const GameBox = () => {
     useGetRooms()
     const games = useSelector(state => state.RoomSlice);
+    console.log(games);
 
     return (
         <>

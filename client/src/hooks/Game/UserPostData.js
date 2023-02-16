@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router'
-import { setName } from '../../redux/features/JoinRoomSlice'
+import { setName } from '../../redux/features/User/UserSlice'
 
 const useUserPostData = (url) => {
     const dispatch = useDispatch()
@@ -31,7 +31,6 @@ const useUserPostData = (url) => {
 
             const data = await response.json()
             dispatch(setName(data.nickname))
-            localStorage.setItem("nickname", JSON.stringify(data.nickname))
             navigate("/rooms")
             if (!response.ok) {
                 throw new Error(data.message)

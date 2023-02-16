@@ -2,22 +2,21 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { setName } from '../redux/features/JoinRoomSlice';
+import { setName } from '../redux/features/User/UserSlice';
 
 
 const Home = () => {
-  const { nickname } = useSelector((state) => state.JoinRoomSlice)
+  const { nickname,status } = useSelector((state) => state.JoinRoomSlice)
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  const userCheck = () => {
 
-    if (localStorage.getItem("nickname")) {
-      dispatch(setName(localStorage.getItem("nickname")))
-      navigate("/rooms")
-    } else {
+    const userCheck = () => {
+    if(status){
+     navigate("/rooms") 
+    }else{
       navigate("/register")
     }
-  }
+    }
   return (
     <div className="bg-gray-800 h-screen flex items-center justify-center">
       <div className="w-full md:w-2/3 lg:w-1/2">

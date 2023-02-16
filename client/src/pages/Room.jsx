@@ -4,14 +4,11 @@ import { motion } from 'framer-motion';
 import GameModal from '../components/Game/GameModal'
 const GameRooms = () => {
     const [modalVisible, setModalVisible] = useState(false)
-<<<<<<< HEAD
     const dispatch = useDispatch()
         const {nickname} = useSelector((state) => state.JoinRoomSlice)
         onSocketConnect(nickname)
         useEffect(() => {
         },[nickname])
-=======
->>>>>>> dev
 
     return (
         <div className={`h-screen bg-gray-800 flex `}>

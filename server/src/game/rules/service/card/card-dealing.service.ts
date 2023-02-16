@@ -100,7 +100,6 @@ export default class GameRules implements GameState, RandomCardType, MainCard {
     card.value = this.randomCardType(CardValue)
     card.game = game
     card.player = player
-    const generateCard = this.cardRepository.save(card)
-    return generateCard
+    await this.cardRepository.save(card)
   }
 }

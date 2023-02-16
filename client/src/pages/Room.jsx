@@ -10,10 +10,8 @@ const GameRooms = () => {
     const [modalVisible, setModalVisible] = useState(false)
     const dispatch = useDispatch()
         const {nickname} = useSelector((state) => state.JoinRoomSlice)
-        console.log(nickname);
         onSocketConnect(nickname)
         useEffect(() => {
-            console.log(nickname);
         },[nickname])
 
     return (

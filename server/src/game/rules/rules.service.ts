@@ -1,7 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { WsException } from "@nestjs/websockets";
 import { Card } from "src/entities/card.entity";
-import { CardId, GetCards } from "./dto/cards.dto";
 import GameRules from "./service/card/card-dealing.service";
 
 @Injectable()
@@ -70,12 +68,11 @@ export class Rules extends GameRules {
 
         findMainCard.color = changeCard.color
         findMainCard.value = changeCard.value
-        this.cardRepository.save(findMainCard)
-        this.cardRepository.remove(changeCard)
+        await this.cardRepository.save(findMainCard)
+        await this.cardRepository.remove(changeCard)
     }
 
-    async getNewCard(username: string, gameId: number) {
-        const game = this.newGenerateCard(gameId, username)
-        return game
+    async getNewCard(username: string, gameId: number): Promise<void> {
+        this.newGenerateCard(gameId, username)
     }
 }

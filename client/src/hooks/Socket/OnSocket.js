@@ -9,7 +9,7 @@ const onSocketConnect = (nickname) => {
 
         if (!localStorage.getItem("nickname")) {
             socket.on('disconnect', () => {
-                navigate("/register")
+                navigate("/")
             })
         }
     },[])

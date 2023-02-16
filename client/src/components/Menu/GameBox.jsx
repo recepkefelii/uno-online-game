@@ -2,15 +2,16 @@ import { useState } from 'react'
 import { motion } from 'framer-motion';
 import useGetRooms from '../../hooks/Socket/Room/GetRooms';
 import { useSelector } from 'react-redux';
-const GameBox = () => {
-    useGetRooms()
-    const games = useSelector(state => state.RoomSlice);
-    console.log(games);
+import currentRooms from '../../hooks/Socket/Room/OnNewGame';
 
+const GameBox = () => {
+    //useGetRooms() // tüm roomları redux stora kaydediyor
+    //currentRooms()
+    const games = useSelector(state => state.RoomSlice);
     return (
         <>
             {
-                games.map((item,index) => (
+                games.map((item, index) => (
                     <motion.div key={index} className="bg-blue-500 h-14 flex items-center  hover:bg-blue-400 border border-blue-700 rounded mt-2"
                         whileHover={{ scale: 1.03 }}
                         whileTap={{ scale: 0.98 }}

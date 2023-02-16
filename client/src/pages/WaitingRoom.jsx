@@ -1,9 +1,8 @@
 import React, { useState } from 'react'
 import { useParams } from 'react-router-dom';
-import ProfilePhoto from '../components/Game/ProfilePhoto'
-import BlankPhoto from '../components/Game/BlankPhoto'
+import ProfilePhoto from '../components/Menu/ProfilePhoto'
+import BlankPhoto from '../components/Menu/BlankPhoto'
 import { motion } from 'framer-motion';
-import ShareButton from '../components/Game/ShareButton'
 
 
 const WaitingRoom = () => {

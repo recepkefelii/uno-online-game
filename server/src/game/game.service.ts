@@ -2,83 +2,98 @@ import { Injectable } from '@nestjs/common';
 import { createGameDto } from './dto/create.game-dto';
 import { joinGameDto } from './dto/join.game-dto';
 import { Game } from '../entities/game.entity';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Player } from 'src/entities/player.entity';
+import * as bcrypt from "bcrypt";
+import GameRules from './rules/service/card/card-dealing.service';
 
 @Injectable()
-export class GameService {
-  constructor(
-    @InjectRepository(Game)
-    private readonly gameRepository: Repository<Game>,
-    @InjectRepository(Player)
-    private readonly playerRepository: Repository<Player>
-  ) { }
-
-  async createGame(body: createGameDto,ownerPlayer:any) {
+export class GameService extends GameRules {
+  async createGame(body: createGameDto, ownerPlayer: any) {
     const owner = await this.playerRepository.findOne({
       where: {
         name: ownerPlayer
       }
     })
-    const game = new Game();
-    game.name = body.name;
-    game.maxPlayers = body.maxPlayers;
-    game.currentPlayers = 1;
-    game.players = [owner]
-    await this.gameRepository.save(game);
-    
-    
 
-    return this.gameRepository.find()
+    if (body.isPrivate) {
+      const salt = 10
+
+      const passwordHash = await bcrypt.hash(body.password, salt)
+
+      const game = new Game();
+      game.name = body.name;
+      game.maxPlayers = body.maxPlayers;
+      game.password = passwordHash;
+      game.owner = owner.name;
+      game.private = true
+      game.currentPlayers = 1;
+      game.players = [owner]
+
+      await this.gameRepository.save(game);
+      return this.gameRepository.find()
+    }
+
+    if (!body.isPrivate) {
+      const game = new Game();
+      game.name = body.name;
+      game.maxPlayers = body.maxPlayers;
+      game.owner = owner.name;
+      game.private = false
+      game.currentPlayers = 1;
+      game.players = [owner]
+
+      await this.gameRepository.save(game);
+      this.logger.log(`ID ${game.id} game successfully created`)
+      this.logger.log(`User named ${owner.name} successfully entered the room created`)
+      return this.gameRepository.find()
+    }
   }
 
-  async joinGame(body: joinGameDto,username:any) {
-    const gameId = body.gameId
+
+  async joinGame(body: joinGameDto, socket: any) {
+    const gameId = body.gameId;
     const game = await this.gameRepository.findOne({
       where: {
         id: gameId
       },
       relations: ['players']
-    })
+    });
 
-    const findByUsername = await this.playerRepository.findOne(
-      {
-        where: {
-          name: username.handshake.query.username
-        }
-      }
-    )
-    
+    if (!game) return { error: 'Game not found' };
+
+    if (game.private) {
+      if (!body.password) return { error: 'Password required for private game' };
+
+      const checkPassword = await bcrypt.compare(body.password, game.password);
+      if (!checkPassword) return { error: 'Incorrect password' };
+    }
+
     const player = await this.playerRepository.findOne({
       where: {
-        id:findByUsername.id
+        name: socket.handshake.query.username
       }
     });
-    
 
-    if (!player) {
-      return { error: 'Player not found' };
-    }
+    if (!player) return { error: 'Player not found' };
 
-    if (!game) {
-      return {error: 'Game not found'}
-    }
+    if (game.currentPlayers >= game.maxPlayers) return { error: 'Game is full' };
 
-    if (game.currentPlayers >= game.maxPlayers) {
-      return { error: 'Game is full' };
-    }
-    
-    game.players.push(player)
+    game.players.push(player);
     game.currentPlayers += 1;
 
-   const currentGame =  await this.gameRepository.save(game)
-    
-    return { message: 'Successfully joined game',
-    "user":{
-      name:player.name,
-      id:player.id
+    if (game.maxPlayers === game.currentPlayers) {
+      game.status = true;
+      await this.cardDealing(game);
+      this.mainCard(game);
     }
-  };
+
+    await this.gameRepository.save(game);
+    this.logger.log(`User named ${player.name} successfully logged into room ${game.name}.`)
+    return {
+      message: 'Successfully joined game',
+      user: {
+        name: player.name,
+        id: player.id
+      }
+    };
   }
 }

@@ -8,7 +8,6 @@ export enum CardColor {
   YELLOW = 'yellow',
   GREEN = 'green',
   BLUE = 'blue',
-  WILD = 'wild',
 }
 
 export enum CardValue {
@@ -29,10 +28,29 @@ export enum CardValue {
   WILD_DRAW_FOUR = 'wild_draw_four',
 }
 
+export enum MainCardValue {
+  ZERO = '0',
+  ONE = '1',
+  TWO = '2',
+  THREE = '3',
+  FOUR = '4',
+  FIVE = '5',
+  SIX = '6',
+  SEVEN = '7',
+  EIGHT = '8',
+  NINE = '9',
+}
+
 @Entity()
 export class Card {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @Column({
+    type: 'boolean',
+    default: false,
+  })
+  isMain: boolean
 
   @Column({
     type: 'enum',
@@ -42,14 +60,19 @@ export class Card {
 
   @Column({
     type: 'enum',
-    enum: CardValue,
+    enum: CardValue || MainCardValue,
   })
-  value: CardValue;
+  value: CardValue | MainCardValue;
 
-  @ManyToOne(type => Game, game => game.cards)
+  @ManyToOne(type => Game, game => game.cards, {
+    onDelete: "CASCADE", orphanedRowAction: 'delete'
+  })
   game: Game;
 
-  @ManyToOne(type => Player, player => player.cards)
+  @ManyToOne(type => Player, player => player.cards,
+    {
+      onDelete: "CASCADE", orphanedRowAction: 'delete'
+    })
   player: Player;
 
   @ManyToOne(type => Move, move => move.card)

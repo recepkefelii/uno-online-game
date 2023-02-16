@@ -1,7 +1,8 @@
-import { IsString } from 'class-validator';
-import { Player } from 'src/entities/player.entity';
+import { IsString, Length, IsNotEmpty } from 'class-validator';
 
 export class userDto {
+    @IsNotEmpty()
+    @Length(3, 20)
     @IsString()
-    name: any
+    name: string
 }

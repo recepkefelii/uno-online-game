@@ -1,19 +1,24 @@
 import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { GameService } from './game.service';
 import { createGameDto } from './dto/create.game-dto';
-import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { Server, } from 'socket.io';
 import { joinGameDto } from './dto/join.game-dto';
 import { Repository } from 'typeorm';
 import { Player } from 'src/entities/player.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Game } from 'src/entities/game.entity';
-import { verify } from 'argon2'
+import * as bcrypt from "bcrypt";
+
 @Injectable()
 @WebSocketGateway({
-  cors: ['http://localhost:3000']
+  cors: {
+    origin: "*"
+  }
 })
 export class GameGateway implements OnModuleInit {
+
+  logger: Logger
 
   @WebSocketServer()
   server: Server
@@ -23,13 +28,21 @@ export class GameGateway implements OnModuleInit {
     private readonly playerRepository: Repository<Player>,
 
     @InjectRepository(Game)
-    private readonly GameRepository: Repository<Game>
-  ) { }
+    private readonly GameRepository: Repository<Game>,
+  ) {
+    this.logger = new Logger(GameGateway.name)
+  }
 
   onModuleInit() {
     this.server.on('connection', async (socket) => {
-      const username = socket.handshake.query.username as string; // convert to only string
-      if (!username) socket.disconnect()
+      this.logger.verbose(`Client socket with id ${socket.id} is trying to connect`)
+      const username = socket.handshake.query.username as string;  // convert to only string
+
+      if (!username) {
+        this.logger.log(`Username is not entered as parameter.
+        The client with id ${socket.id} could not be allowed to connect socket`)
+        socket.disconnect()
+      }
 
       const player = await this.playerRepository.findOne({
         where: {
@@ -37,49 +50,55 @@ export class GameGateway implements OnModuleInit {
         }
       })
 
+
       if (!player) {
+        this.logger.warn(`Socket connection not allowed because there is no user named ${player.name}`)
         return socket.disconnect();
       }
 
-      const verifyUsername = await verify(player.hash, username)
+      const verifyUsername = await bcrypt.compare(username, player.hash)
 
       if (!verifyUsername) {
+        this.logger.warn(`Could not decode the hash of ${player.name}`)
         return socket.disconnect();
       }
+      this.logger.verbose(`User with id ${socket.id} connected socket successfully`)
 
+
+      //Disconnect
       socket.on('disconnect', async () => {
-        const fetchUser = await this.playerRepository.findOne({
-          where: { name: username }, relations: {
-            game: true
-          }
+        this.logger.warn(`Disconnect event triggered by client with id ${socket.id}`)
+        const user = await this.playerRepository.findOne({
+          where: { name: username },
+          relations: ['game']
         });
-        if (fetchUser.game && fetchUser.game.id) {
-          const checkGames = await this.GameRepository.findOne({
-            where: {
-              id: fetchUser.game.id
-            },
+        user.cards
+
+        if (user.game) {
+          const game = await this.GameRepository.findOne({
+            where: { id: user.game.id },
             relations: {
+              cards: true,
               players: true
             }
-          })
+          });
 
-          checkGames.currentPlayers -= 1
-          await this.GameRepository.save(checkGames)
+          game.currentPlayers--;
+          await this.GameRepository.save(game);
 
-          if (fetchUser) {
-            fetchUser.game = null;
-            const currentPlayers = await this.playerRepository.save(fetchUser);
-            if (checkGames.currentPlayers == 0) {
-              socket.broadcast.emit('onDeleteGame', {
-                "id": checkGames.name,
-                "name": checkGames.name
+          user.game = null;
+          user.cards = null
+          await this.playerRepository.save(user);
 
-              })
-              this.GameRepository.remove(checkGames)
-            }
+          if (game.currentPlayers === 0) {
+            socket.broadcast.emit('onDeleteGame', {
+              id: game.id,
+              name: game.name
+            });
+            await this.GameRepository.remove(game);
+            this.logger.log(`Game named ${game.name} has been deleted successfully`)
           }
         }
-
       });
     });
 
@@ -106,8 +125,9 @@ export class GameGateway implements OnModuleInit {
     return join
   }
   @SubscribeMessage('getRooms')
-  async handleGetRooms(@ConnectedSocket() socket: any) {
+  async handleGetRooms(@MessageBody() body: string, @ConnectedSocket() socket: any) {
     const allRooms = await this.GameRepository.find();
-    socket.emit('allRooms', allRooms);
+
+    this.server.emit('allRooms', allRooms);
   }
 }

@@ -28,8 +28,8 @@ export class GameService extends GameRules {
       game.currentPlayers = 1;
       game.players = [owner]
 
-      await this.gameRepository.save(game);
-      return this.gameRepository.find()
+      const newGame = this.gameRepository.save(game);
+      return newGame
     }
 
     if (!body.isPrivate) {
@@ -40,11 +40,11 @@ export class GameService extends GameRules {
       game.private = false
       game.currentPlayers = 1;
       game.players = [owner]
-
-      await this.gameRepository.save(game);
+      
+      const newGame = await this.gameRepository.save(game);
       this.logger.log(`ID ${game.id} game successfully created`)
       this.logger.log(`User named ${owner.name} successfully entered the room created`)
-      return this.gameRepository.find()
+      return newGame
     }
   }
 

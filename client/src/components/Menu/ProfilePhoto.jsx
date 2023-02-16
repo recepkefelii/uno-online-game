@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { identicon } from 'minidenticons'
 import { BsQuestionLg } from 'react-icons/bs'
 
 const ProfilePhoto = () => {

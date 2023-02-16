@@ -6,7 +6,7 @@ import {
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-function ShareButton() {
+const ShareButton = () => {
   const [buttonValue, setButtonValue] = useState('UsadRL');
 
   useEffect(() => {

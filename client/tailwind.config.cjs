@@ -12,7 +12,8 @@ module.exports = withMT({
       blue1: '#7286D3',
       blue2: "#0066FF",
       blue3: '#8EA7E9',
-      blue4: '#6881E0'
+      blue4: '#6881E0',
+      bluehover: '#788EE3'
     },
 
   },

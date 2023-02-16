@@ -1,7 +1,6 @@
 import { useEffect } from "react"
 import { io } from "socket.io-client"
 import { useNavigate } from "react-router"
-import { useSelector } from "react-redux"
 
 const onSocketConnect = (nickname) => {
     const navigate = useNavigate()

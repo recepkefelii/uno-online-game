@@ -4,18 +4,21 @@ import { joinGameDto } from './dto/join.game-dto';
 import { Game } from '../entities/game.entity';
 import * as bcrypt from "bcrypt";
 import GameRules from './rules/service/card/card-dealing.service';
+import { IGetUserType } from './interface/user.interface';
 
 @Injectable()
 export class GameService extends GameRules {
 
-  async createGame(body: createGameDto) {
+
+  //Create Game Service
+  async createGame(body: createGameDto, user: IGetUserType) {
     try {
-      const ownerPlayer = await this.playerRepository.findOneOrFail({ where: { name: body.username } });
+      const ownerPlayer = await this.playerRepository.findOneOrFail({ where: { name: user.name } });
 
       const game = new Game();
       game.name = body.name;
       game.players = [ownerPlayer];
-      game.owner = body.username;
+      game.owner = user.name;
       game.maxPlayers = body.maxPlayers;
       game.currentPlayers = 1
 
@@ -34,52 +37,57 @@ export class GameService extends GameRules {
       throw new HttpException('unsuccessful', HttpStatus.BAD_REQUEST);
     }
   }
-  async joinGame(body: joinGameDto) {
+
+
+
+
+  //Join Game Service
+  async joinGame(body: joinGameDto, user:IGetUserType) {
     const game = await this.gameRepository.findOneOrFail({
-    where: { id: body.gameId },
-    relations: ['players']
+      where: { id: body.gameId },
+      relations: ['players']
     });
-    
+
     if (!game) {
-    throw new HttpException('Game not found', HttpStatus.BAD_REQUEST);
+      throw new HttpException('Game not found', HttpStatus.BAD_REQUEST);
     }
-    
+
     if (game.private && body.password !== game.password) {
-    throw new HttpException('Wrong password', HttpStatus.BAD_REQUEST);
+      throw new HttpException('Wrong password', HttpStatus.BAD_REQUEST);
     }
-    
+
     const player = await this.playerRepository.findOne({
-    where: { name: body.username }
+      where: { name: user.name }
     });
-    
+
     if (!player) {
-    return { error: 'Player not found' };
+      return { error: 'Player not found' };
     }
-    
+
     if (game.currentPlayers >= game.maxPlayers) {
-    return { error: 'Game is full' };
+      return { error: 'Game is full' };
     }
-    
+
     game.players.push(player);
     game.currentPlayers += 1;
-    
+
     if (game.maxPlayers === game.currentPlayers) {
-    game.status = true;
-    await this.cardDealing(game);
-    this.mainCard(game);
+      game.status = true;
+      await this.cardDealing(game);
+      this.mainCard(game);
     }
-    
+
     await this.gameRepository.save(game);
     this.logger.log(`User named ${player.name} successfully logged into room ${game.name}`);
-    
+
     return {
-    message: 'Successfully joined game',
-    user: {
-    name: player.name,
-    id: player.id
-    }
+      message: 'Successfully joined game',
+      user: {
+        name: player.name,
+        id: player.id
+      }
     };
-    }
+  }
   async getAllRooms() {
     return this.gameRepository.find()
   }

@@ -5,7 +5,6 @@ import { Repository } from 'typeorm';
 import { AuthDto } from './dto/auth.dto';
 import { sign } from 'jsonwebtoken';
 import * as bcrypt from 'bcrypt'
-import { WsException } from '@nestjs/websockets';
 import { ConfigService } from '@nestjs/config';
 
 interface IPayload {

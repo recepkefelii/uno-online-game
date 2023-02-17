@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { createGameDto } from './dto/create.game-dto';
 import { joinGameDto } from './dto/join.game-dto';
 import { Game } from '../entities/game.entity';
@@ -40,7 +40,7 @@ export class GameService extends GameRules {
       game.private = false
       game.currentPlayers = 1;
       game.players = [owner]
-      
+
       const newGame = await this.gameRepository.save(game);
       this.logger.log(`ID ${game.id} game successfully created`)
       this.logger.log(`User named ${owner.name} successfully entered the room created`)
@@ -96,4 +96,32 @@ export class GameService extends GameRules {
       }
     };
   }
+
+  async createGames(body: createGameDto) {
+    try {
+      const ownerPlayer = await this.playerRepository.findOneOrFail({ where: { name: body.username } });
+
+      const game = new Game();
+      game.name = body.name;
+      game.players = [ownerPlayer];
+      game.owner = body.username;
+      game.maxPlayers = body.maxPlayers;
+
+      if (body.isPrivate) {
+        game.password = body.password;
+      }
+
+      const newGame = await this.gameRepository.save(game);
+
+      this.logger.log(`ID ${newGame.id} game successfully created`);
+      this.logger.log(`User named ${ownerPlayer.name} successfully entered the room created`);
+
+      return newGame;
+    } catch (error) {
+      this.logger.error(`An error occurred while creating the game: ${error.message}`);
+      throw new HttpException('unsuccessful', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+
 }

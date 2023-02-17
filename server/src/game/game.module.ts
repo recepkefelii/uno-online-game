@@ -7,9 +7,11 @@ import { Player } from '../entities/player.entity';
 import { Card } from 'src/entities/card.entity';
 import { Move } from 'src/entities/move.entity';
 import { RulesModule } from './rules/rules.module';
+import { GameController } from './game.controller';
 @Module({
     imports: [TypeOrmModule.forFeature([Game,Player,Card,Move]),RulesModule],
-    providers: [GameGateway, GameService]
+    providers: [GameGateway, GameService],
+    controllers: [GameController]
 })
 export class GameModule {
 

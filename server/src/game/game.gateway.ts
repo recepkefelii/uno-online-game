@@ -102,31 +102,4 @@ export class GameGateway implements OnModuleInit {
     });
 
   };
-
-  @SubscribeMessage('newGame')
-  async onNewGame(@MessageBody() body: createGameDto, @ConnectedSocket() socket: any) {
-    const ownerPlayer = socket.handshake.query.username
-    const newGame = await this.gameService.createGame(body, ownerPlayer)
-
-    socket.broadcast.emit('onNewGame', {
-      newGame
-    })
-
-    return newGame
-  }
-
-  @SubscribeMessage('joinGame')
-  async onJoinGame(@MessageBody() body: joinGameDto, @ConnectedSocket() socket: any) {
-    const join = await this.gameService.joinGame(body, socket)
-    this.server.emit('onJoinGame', {
-      join
-    })
-    return join
-  }
-  @SubscribeMessage('getRooms')
-  async handleGetRooms(@MessageBody() body: string, @ConnectedSocket() socket: any) {
-    const allRooms = await this.GameRepository.find();
-
-    this.server.emit('allRooms', allRooms);
-  }
 }

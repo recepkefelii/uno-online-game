@@ -1,11 +1,18 @@
-import { IsString, Length } from "class-validator"
+import { IsBoolean, IsInt, IsNotEmpty, IsOptional, IsString, Length } from "class-validator"
 
 export class joinGameDto {
+    @IsNotEmpty()
+    @IsInt()
     gameId: number
-    playerId: number
-    @Length(4, 20)
+
+    @Length(4, 10)
     @IsString()
+    @IsOptional()
     password: string
-    @IsString()
+
+    @IsNotEmpty()
+    @IsBoolean()
     isPrivate: boolean
+
+    username: string
 }

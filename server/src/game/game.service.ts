@@ -7,97 +7,7 @@ import GameRules from './rules/service/card/card-dealing.service';
 
 @Injectable()
 export class GameService extends GameRules {
-  async createGame(body: createGameDto, ownerPlayer: any) {
-    const owner = await this.playerRepository.findOne({
-      where: {
-        name: ownerPlayer
-      }
-    })
-
-    if (body.isPrivate) {
-      const salt = 10
-
-      const passwordHash = await bcrypt.hash(body.password, salt)
-
-      const game = new Game();
-      game.name = body.name;
-      game.maxPlayers = body.maxPlayers;
-      game.password = passwordHash;
-      game.owner = owner.name;
-      game.private = true
-      game.currentPlayers = 1;
-      game.players = [owner]
-
-      const newGame = this.gameRepository.save(game);
-      return newGame
-    }
-
-    if (!body.isPrivate) {
-      const game = new Game();
-      game.name = body.name;
-      game.maxPlayers = body.maxPlayers;
-      game.owner = owner.name;
-      game.private = false
-      game.currentPlayers = 1;
-      game.players = [owner]
-
-      const newGame = await this.gameRepository.save(game);
-      this.logger.log(`ID ${game.id} game successfully created`)
-      this.logger.log(`User named ${owner.name} successfully entered the room created`)
-      return newGame
-    }
-  }
-
-
-  async joinGame(body: joinGameDto, socket: any) {
-    const gameId = body.gameId;
-    const game = await this.gameRepository.findOne({
-      where: {
-        id: gameId
-      },
-      relations: ['players']
-    });
-
-    if (!game) return { error: 'Game not found' };
-
-    if (game.private) {
-      if (!body.password) return { error: 'Password required for private game' };
-
-      const checkPassword = await bcrypt.compare(body.password, game.password);
-      if (!checkPassword) return { error: 'Incorrect password' };
-    }
-
-    const player = await this.playerRepository.findOne({
-      where: {
-        name: socket.handshake.query.username
-      }
-    });
-
-    if (!player) return { error: 'Player not found' };
-
-    if (game.currentPlayers >= game.maxPlayers) return { error: 'Game is full' };
-
-    game.players.push(player);
-    game.currentPlayers += 1;
-
-    if (game.maxPlayers === game.currentPlayers) {
-      game.status = true;
-      await this.cardDealing(game);
-      this.mainCard(game);
-    }
-
-    await this.gameRepository.save(game);
-    this.logger.log(`User named ${player.name} successfully logged into room ${game.name}.`)
-    return {
-      message: 'Successfully joined game',
-      user: {
-        name: player.name,
-        id: player.id
-      }
-    };
-  }
-
-  async createGames(body: createGameDto) {
+  async createGame(body: createGameDto) {
     try {
       const ownerPlayer = await this.playerRepository.findOneOrFail({ where: { name: body.username } });
 
@@ -122,6 +32,48 @@ export class GameService extends GameRules {
       throw new HttpException('unsuccessful', HttpStatus.BAD_REQUEST);
     }
   }
+  async joinGame(body: joinGameDto) {
+    const game = await this.gameRepository
+      .createQueryBuilder('game')
+      .leftJoinAndSelect('game.players', 'player')
+      .where('game.id = :id', { id: body.gameId })
+      .andWhere('player.name = :name', { name: body.username })
+      .getOne();
 
+    if (!game) {
+      throw new HttpException('Game not found', HttpStatus.BAD_REQUEST);
+    }
 
+    if (game.private && body.password !== game.password) {
+      throw new HttpException('Wrong password', HttpStatus.BAD_REQUEST);
+    }
+
+    if (game.currentPlayers >= game.maxPlayers) {
+      return { error: 'Game is full' };
+    }
+
+    if (!game.players.find(p => p.name === body.username)) {
+      const player = this.playerRepository.create({ name: body.username });
+      await this.playerRepository.save(player);
+      game.players.push(player);
+      game.currentPlayers += 1;
+    }
+
+    if (game.maxPlayers === game.currentPlayers) {
+      game.status = true;
+      await this.cardDealing(game);
+      this.mainCard(game);
+    }
+
+    await this.gameRepository.save(game);
+    this.logger.log(`User named ${body.username} successfully logged into room ${game.name}`);
+
+    return {
+      "message": 'successfully entered the room',
+      "status": HttpStatus.ACCEPTED
+    }
+  }
+  async getAllRooms() {
+    return this.gameRepository.find()
+  }
 }

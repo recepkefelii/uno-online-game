@@ -3,14 +3,19 @@ export class createGameDto {
     @IsString()
     @Length(10, 20)
     name: string
-    @IsNumber()
-    currentPlayers: number
+
+    @IsNotEmpty()
     @IsNumber()
     maxPlayers: number
+
+    @Length(4, 20)
     @IsString()
     password: string
+
+    @IsNotEmpty()
     @IsBoolean()
     isPrivate: boolean
+
     @IsNotEmpty()
     @IsString()
     username: string

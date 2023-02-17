@@ -7,6 +7,7 @@ import GameRules from './rules/service/card/card-dealing.service';
 
 @Injectable()
 export class GameService extends GameRules {
+
   async createGame(body: createGameDto) {
     try {
       const ownerPlayer = await this.playerRepository.findOneOrFail({ where: { name: body.username } });
@@ -16,6 +17,7 @@ export class GameService extends GameRules {
       game.players = [ownerPlayer];
       game.owner = body.username;
       game.maxPlayers = body.maxPlayers;
+      game.currentPlayers = 1
 
       if (body.isPrivate) {
         game.password = body.password;
@@ -33,46 +35,51 @@ export class GameService extends GameRules {
     }
   }
   async joinGame(body: joinGameDto) {
-    const game = await this.gameRepository
-      .createQueryBuilder('game')
-      .leftJoinAndSelect('game.players', 'player')
-      .where('game.id = :id', { id: body.gameId })
-      .andWhere('player.name = :name', { name: body.username })
-      .getOne();
-
+    const game = await this.gameRepository.findOneOrFail({
+    where: { id: body.gameId },
+    relations: ['players']
+    });
+    
     if (!game) {
-      throw new HttpException('Game not found', HttpStatus.BAD_REQUEST);
+    throw new HttpException('Game not found', HttpStatus.BAD_REQUEST);
     }
-
+    
     if (game.private && body.password !== game.password) {
-      throw new HttpException('Wrong password', HttpStatus.BAD_REQUEST);
+    throw new HttpException('Wrong password', HttpStatus.BAD_REQUEST);
     }
-
+    
+    const player = await this.playerRepository.findOne({
+    where: { name: body.username }
+    });
+    
+    if (!player) {
+    return { error: 'Player not found' };
+    }
+    
     if (game.currentPlayers >= game.maxPlayers) {
-      return { error: 'Game is full' };
+    return { error: 'Game is full' };
     }
-
-    if (!game.players.find(p => p.name === body.username)) {
-      const player = this.playerRepository.create({ name: body.username });
-      await this.playerRepository.save(player);
-      game.players.push(player);
-      game.currentPlayers += 1;
-    }
-
+    
+    game.players.push(player);
+    game.currentPlayers += 1;
+    
     if (game.maxPlayers === game.currentPlayers) {
-      game.status = true;
-      await this.cardDealing(game);
-      this.mainCard(game);
+    game.status = true;
+    await this.cardDealing(game);
+    this.mainCard(game);
     }
-
+    
     await this.gameRepository.save(game);
-    this.logger.log(`User named ${body.username} successfully logged into room ${game.name}`);
-
+    this.logger.log(`User named ${player.name} successfully logged into room ${game.name}`);
+    
     return {
-      "message": 'successfully entered the room',
-      "status": HttpStatus.ACCEPTED
+    message: 'Successfully joined game',
+    user: {
+    name: player.name,
+    id: player.id
     }
-  }
+    };
+    }
   async getAllRooms() {
     return this.gameRepository.find()
   }

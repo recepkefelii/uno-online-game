@@ -7,15 +7,19 @@ import { GameService } from './game.service';
 export class GameController {
     constructor(private readonly gameService:GameService){}
     @Post('create')
-    createGame(@Body() body:createGameDto){
+    async createGame(@Body() body:createGameDto){
         return this.gameService.createGame(body)
     }
     @Post('join')
-    joinGame(@Body() body: joinGameDto){
+    async joinGame(@Body() body: joinGameDto){
         return this.gameService.joinGame(body)
     }
     @Get('get')
-    getAllRooms(){
+    async getAllRooms(){
        return this.gameService.getAllRooms() 
     }
+    // @Post('leave')
+    // async leaveGame(){
+        // return
+    // }
 }

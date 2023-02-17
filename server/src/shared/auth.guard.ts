@@ -5,11 +5,12 @@ import {
   HttpStatus,
   Injectable,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { verify } from 'jsonwebtoken';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor() { }
+  constructor(private readonly configService: ConfigService) { }
 
   canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest();
@@ -30,7 +31,7 @@ export class AuthGuard implements CanActivate {
   }
 
   verifyToken(token: string) {
-    return verify(token, process.env.JWT_KEY);
+    return verify(token, this.configService.get('JWT_KEY'));
   }
 
 }

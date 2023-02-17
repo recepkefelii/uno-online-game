@@ -13,6 +13,4 @@ export class joinGameDto {
     @IsNotEmpty()
     @IsBoolean()
     isPrivate: boolean
-
-    username: string
 }

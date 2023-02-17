@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@nestjs/common": "^9.0.0",
+    "@nestjs/config": "^2.3.1",
     "@nestjs/core": "^9.0.0",
     "@nestjs/platform-express": "^9.0.0",
     "@nestjs/platform-socket.io": "^9.2.1",
@@ -33,6 +34,7 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
     "dotenv": "^16.0.3",
+    "jsonwebtoken": "^9.0.0",
     "lodash": "^4.17.21",
     "postgre": "^0.1.8",
     "postgres": "^3.3.3",

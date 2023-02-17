@@ -1,25 +1,34 @@
-import { Controller, Post,Body, Get } from '@nestjs/common';
+import { Controller, Post, Body, Get, UseGuards } from '@nestjs/common';
+import { AuthDto } from 'src/auth/dto/auth.dto';
+import { GetUser } from 'src/shared/auth.decorator';
+import { AuthGuard } from 'src/shared/auth.guard';
 import { createGameDto } from './dto/create.game-dto';
 import { joinGameDto } from './dto/join.game-dto';
 import { GameService } from './game.service';
+import { IGetUserType } from './interface/user.interface';
 
 @Controller('game')
 export class GameController {
-    constructor(private readonly gameService:GameService){}
+    constructor(private readonly gameService: GameService) { }
     @Post('create')
-    async createGame(@Body() body:createGameDto){
-        return this.gameService.createGame(body)
+    @UseGuards(AuthGuard)
+    async createGame(@Body() body: createGameDto, @GetUser() user: IGetUserType) {
+        console.log(user.name);
+
+        return this.gameService.createGame(body,user)
     }
     @Post('join')
-    async joinGame(@Body() body: joinGameDto){
-        return this.gameService.joinGame(body)
+    @UseGuards(AuthGuard)
+    async joinGame(@Body() body: joinGameDto, @GetUser() user: IGetUserType) {
+        return this.gameService.joinGame(body,user)
     }
     @Get('get')
-    async getAllRooms(){
-       return this.gameService.getAllRooms() 
+    async getAllRooms() {
+        return this.gameService.getAllRooms()
     }
-    // @Post('leave')
-    // async leaveGame(){
-        // return
-    // }
+    @UseGuards(AuthGuard)
+    @Post('leave')
+    async leaveGame() {
+
+    }
 }

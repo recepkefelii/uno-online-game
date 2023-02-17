@@ -5,11 +5,12 @@ import {
   HttpStatus,
   Injectable,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { verify } from 'jsonwebtoken';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor() { }
+  constructor(private readonly config: ConfigService) { }
 
   canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest();
@@ -17,6 +18,7 @@ export class AuthGuard implements CanActivate {
       return false;
     }
     request.user = this.validateToken(request.headers.authorization);
+
     return true;
   }
 
@@ -25,12 +27,14 @@ export class AuthGuard implements CanActivate {
       throw new HttpException('Invalid token', HttpStatus.FORBIDDEN);
     }
     const token = auth.split(' ')[1];
+
     const decoded = this.verifyToken(token);
+
     return decoded;
   }
 
   verifyToken(token: string) {
-    return verify(token, process.env.JWT_KEY);
+    return verify(token, this.config.get('JWT_KEY'));
   }
 
 }

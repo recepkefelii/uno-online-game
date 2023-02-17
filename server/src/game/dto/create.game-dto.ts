@@ -17,8 +17,4 @@ export class createGameDto {
     @IsNotEmpty()
     @IsBoolean()
     isPrivate: boolean;
-
-    @IsNotEmpty()
-    @IsString()
-    username: string;
 }

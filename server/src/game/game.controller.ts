@@ -1,7 +1,7 @@
 import { Controller, Post, Body, Get, UseGuards } from '@nestjs/common';
 import { AuthDto } from 'src/auth/dto/auth.dto';
 import { GetUser } from 'src/shared/auth.decorator';
-import { AuthGuard } from 'src/shared/auth.guard';
+import { AuthGuard } from 'src/shared/guard/auth.guard';
 import { createGameDto } from './dto/create.game-dto';
 import { joinGameDto } from './dto/join.game-dto';
 import { GameService } from './game.service';

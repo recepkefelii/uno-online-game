@@ -73,8 +73,6 @@ export class GameService extends GameRules {
 
     if (game.maxPlayers === game.currentPlayers) {
       game.status = true;
-      await this.cardDealing(game);
-      this.mainCard(game);
     }
 
     await this.gameRepository.save(game);

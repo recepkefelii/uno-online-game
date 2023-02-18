@@ -1,7 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { Player } from './player.entity';
 import { Card } from './card.entity';
-import { Move } from './move.entity';
 
 @Entity()
 export class Game {
@@ -34,7 +33,4 @@ export class Game {
 
   @OneToMany(type => Card, card => card.game, { cascade: ["remove"] })
   cards: Card[];
-
-  @OneToMany(type => Move, move => move.game, { cascade: ["remove"] })
-  moves: Move[];
 }

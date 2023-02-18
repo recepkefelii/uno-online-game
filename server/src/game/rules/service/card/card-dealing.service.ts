@@ -1,15 +1,13 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Card, MainCardValue } from "src/entities/card.entity";
 import { Game } from "src/entities/game.entity";
-import { Move } from "src/entities/move.entity";
 import { Player } from "src/entities/player.entity";
 import { Repository } from 'typeorm';
 import { GameState, RandomCardType } from "src/game/rules/service/interface";
-import { CardColor, CardValue } from "src/entities/card.entity";
 import { MainCard } from "src/game/rules/service/interface/main.card-type";
 import { WsException } from "@nestjs/websockets";
 import * as _ from 'lodash';
+import { Card } from "src/entities/card.entity";
 @Injectable()
 export default class GameRules implements GameState, RandomCardType, MainCard {
   logger: Logger
@@ -21,8 +19,6 @@ export default class GameRules implements GameState, RandomCardType, MainCard {
     public readonly playerRepository: Repository<Player>,
     @InjectRepository(Card)
     public readonly cardRepository: Repository<Card>,
-    @InjectRepository(Move)
-    public readonly moveRepository: Repository<Move>,
   ) {
     this.logger = new Logger(GameRules.name)
   }
@@ -34,19 +30,7 @@ export default class GameRules implements GameState, RandomCardType, MainCard {
     return enumValues[randomIndex];
   };
 
-  async cardControl(card: Card, mainCard: Card) {
-    if (mainCard.color === card.color || mainCard.value === card.value) {
-      card.move = mainCard.move
-      card.player = mainCard.player
-      card.game = mainCard.game
-      mainCard = card;
-      this.logger.verbose(`Card check successful, Card: Id ${card.id} Color ${card.color} Value ${card.value} `)
-      return mainCard;
-    } else {
-      this.logger.error('A Card was played that did not comply with the rules of the game')
-      throw new WsException("This move is against the rules");
-    }
-  }
+ 
 
   async cardDealing(game: Game): Promise<void> {
 
@@ -57,8 +41,8 @@ export default class GameRules implements GameState, RandomCardType, MainCard {
       player.cards = []
       for (let i = 0; i < numberOfCards; ++i) {
         const card = new Card();
-        card.color = this.randomCardType(CardColor)
-        card.value = this.randomCardType(CardValue)
+        // card.color = this.randomCardType(CardColor)
+        // card.value = this.randomCardType(CardValue)
         card.game = game
         player.cards.push(card)
         card.player = player
@@ -70,8 +54,8 @@ export default class GameRules implements GameState, RandomCardType, MainCard {
   }
   mainCard(game: Game) {
     const card = new Card()
-    card.value = this.randomCardType(MainCardValue)
-    card.color = this.randomCardType(CardColor)
+    // card.value = this.randomCardType(MainCardValue)
+    // card.color = this.randomCardType(CardColor)
     card.game = game
     card.isMain = true
     this.cardRepository.save(card)
@@ -96,8 +80,8 @@ export default class GameRules implements GameState, RandomCardType, MainCard {
     )
 
     const card = new Card()
-    card.color = this.randomCardType(CardColor)
-    card.value = this.randomCardType(CardValue)
+    // card.color = this.randomCardType(CardColor)
+    // card.value = this.randomCardType(CardValue)
     card.game = game
     card.player = player
     await this.cardRepository.save(card)

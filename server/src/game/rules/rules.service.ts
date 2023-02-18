@@ -53,7 +53,7 @@ export class Rules extends GameRules {
             return { "error": 'This card is not in your hand' };
         }
 
-        const changeCard = await this.cardControl(card, mainCard)
+        // const changeCard = await this.cardControl(card, mainCard)
 
         const currentMainCard = await this.gameRepository.findOne({
             where: {
@@ -66,10 +66,10 @@ export class Rules extends GameRules {
 
         const findMainCard = currentMainCard.cards.find(card => card.isMain === true)
 
-        findMainCard.color = changeCard.color
-        findMainCard.value = changeCard.value
-        await this.cardRepository.save(findMainCard)
-        await this.cardRepository.remove(changeCard)
+        // findMainCard.color = changeCard.color
+        // findMainCard.number = changeCard.value
+        // await this.cardRepository.save(findMainCard)
+        // await this.cardRepository.remove(changeCard)
     }
 
     async getNewCard(username: string, gameId: number): Promise<void> {

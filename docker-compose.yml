@@ -12,7 +12,7 @@ services:
     networks:
       - uno
 
-   backend:
+  backend:
     build: ./server
     ports:
       - 3000:3000

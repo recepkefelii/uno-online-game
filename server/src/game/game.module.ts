@@ -6,10 +6,10 @@ import { Player } from '../entities/player.entity';
 import { Card } from 'src/entities/card.entity';
 import { RulesModule } from './rules/rules.module';
 import { GameController } from './game.controller';
-import { RedisCacheService } from './redis.service';
+import { RedisModule } from 'nestjs-redis';
 @Module({
-    imports: [TypeOrmModule.forFeature([Game,Player,Card]),RulesModule],
-    providers: [GameService,RedisCacheService],
+    imports: [TypeOrmModule.forFeature([Game, Player, Card]), RulesModule,RedisModule],
+    providers: [GameService],
     controllers: [GameController]
 })
 export class GameModule {

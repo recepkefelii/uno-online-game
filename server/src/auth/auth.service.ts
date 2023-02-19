@@ -7,7 +7,7 @@ import * as bcrypt from 'bcrypt'
 import { ConfigService } from '@nestjs/config';
 import { Cache as Cache } from 'cache-manager';
 import { IGetUserType } from 'src/game/interface/user.interface';
-import { AuthDto } from './dto/auth.dto';
+import { UpdateDto,AuthDto } from './dto/auth.dto';
 
 interface IPayload {
     name: string
@@ -90,7 +90,7 @@ export class AuthService {
         return sign(payload, this.configService.get('JWT_KEY'))
     }
 
-    async update(body: AuthDto, user: IGetUserType) {
+    async update(body: UpdateDto, user: IGetUserType) {
         const player = await this.playerRepository.findOneOrFail({
             where: {
                 id: user.id

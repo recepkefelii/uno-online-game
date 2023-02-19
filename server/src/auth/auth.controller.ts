@@ -3,7 +3,7 @@ import { GetUser } from 'src/shared/auth.decorator';
 import { AuthGuard } from 'src/shared/guard/auth.guard';
 import { AuthService } from './auth.service';
 import { IGetUserType } from 'src/game/interface/user.interface';
-import { AuthDto } from './dto/auth.dto';
+import { AuthDto, UpdateDto } from './dto/auth.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -19,7 +19,7 @@ export class AuthController {
     }
     @Patch('update')
     @UseGuards(AuthGuard)
-    async update(@Body() body: AuthDto, @GetUser() user: IGetUserType) {
+    async update(@Body() body: UpdateDto, @GetUser() user: IGetUserType) {
         return this.authService.update(body, user)
     }
 }

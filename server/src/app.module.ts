@@ -4,7 +4,6 @@ import { ormConfig } from './config/orm.config';
 import { GameModule } from './game/game.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { redisStore } from 'cache-manager-redis-store';
 
 @Global()
 @Module({

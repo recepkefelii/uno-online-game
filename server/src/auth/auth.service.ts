@@ -2,11 +2,12 @@ import { CACHE_MANAGER, HttpException, HttpStatus, Inject, Injectable, Logger } 
 import { InjectRepository } from '@nestjs/typeorm';
 import { Player } from 'src/entities/player.entity';
 import { Repository } from 'typeorm';
-import { AuthDto } from './dto/auth.dto';
 import { sign } from 'jsonwebtoken';
 import * as bcrypt from 'bcrypt'
 import { ConfigService } from '@nestjs/config';
 import { Cache as Cache } from 'cache-manager';
+import { IGetUserType } from 'src/game/interface/user.interface';
+import { AuthDto } from './dto/auth.dto';
 
 interface IPayload {
     name: string
@@ -52,8 +53,6 @@ export class AuthService {
     async login(body: AuthDto) {
         try {
             const getToken = await this.redisCacheService.get(body.name)
-            console.log(getToken);
-
 
             if (getToken) {
                 // return cache Token
@@ -89,6 +88,21 @@ export class AuthService {
 
     async jwtSign(payload: IPayload): Promise<string> {
         return sign(payload, this.configService.get('JWT_KEY'))
+    }
+
+    async update(body: AuthDto, user: IGetUserType) {
+        const player = await this.playerRepository.findOneOrFail({
+            where: {
+                id: user.id
+            }
+        })
+        const salt = 10
+        const hashPassword = await bcrypt.hash(body.password, salt)
+        player.hash = hashPassword
+        player.name = body.name
+        this.playerRepository.save(player)
+        this.redisCacheService.del(user.name)
+        return HttpStatus.OK
     }
 
 }

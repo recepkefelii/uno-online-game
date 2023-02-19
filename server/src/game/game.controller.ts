@@ -13,8 +13,6 @@ export class GameController {
     @Post('create')
     @UseGuards(AuthGuard)
     async createGame(@Body() body: createGameDto, @GetUser() user: IGetUserType) {
-        console.log(user.name);
-
         return this.gameService.createGame(body,user)
     }
     @Post('join')

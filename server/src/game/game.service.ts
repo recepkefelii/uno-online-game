@@ -1,20 +1,31 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { createGameDto } from './dto/create.game-dto';
 import { joinGameDto } from './dto/join.game-dto';
 import { Game } from '../entities/game.entity';
-import * as bcrypt from "bcrypt";
-import GameRules from './rules/service/card/card-dealing.service';
 import { IGetUserType } from './interface/user.interface';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Player } from 'src/entities/player.entity';
+import { Card } from 'src/entities/card.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
-export class GameService extends GameRules {
-
+export class GameService {
+  logger: Logger
+  constructor(
+    @InjectRepository(Game)
+    public readonly gameRepository: Repository<Game>,
+    @InjectRepository(Player)
+    public readonly playerRepository: Repository<Player>,
+    @InjectRepository(Card)
+    public readonly cardRepository: Repository<Card>,
+  ) {
+    this.logger = new Logger(GameService.name)
+  }
 
   //Create Game Service
   async createGame(body: createGameDto, user: IGetUserType) {
     try {
       const ownerPlayer = await this.playerRepository.findOneOrFail({ where: { name: user.name } });
-
       const game = new Game();
       game.name = body.name;
       game.players = [ownerPlayer];
@@ -42,7 +53,7 @@ export class GameService extends GameRules {
 
 
   //Join Game Service
-  async joinGame(body: joinGameDto, user:IGetUserType) {
+  async joinGame(body: joinGameDto, user: IGetUserType) {
     const game = await this.gameRepository.findOneOrFail({
       where: { id: body.gameId },
       relations: ['players']

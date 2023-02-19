@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
+import { CACHE_MANAGER, HttpException, HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Player } from 'src/entities/player.entity';
 import { Repository } from 'typeorm';
@@ -6,6 +6,7 @@ import { AuthDto } from './dto/auth.dto';
 import { sign } from 'jsonwebtoken';
 import * as bcrypt from 'bcrypt'
 import { ConfigService } from '@nestjs/config';
+import { Cache as Cache } from 'cache-manager';
 
 interface IPayload {
     name: string
@@ -18,7 +19,8 @@ export class AuthService {
     constructor(
         @InjectRepository(Player)
         public readonly playerRepository: Repository<Player>,
-        private readonly configService: ConfigService
+        private readonly configService: ConfigService,
+        @Inject(CACHE_MANAGER) private redisCacheService: Cache
     ) {
         this.logger = new Logger()
     }
@@ -46,8 +48,18 @@ export class AuthService {
         }
     }
 
+
     async login(body: AuthDto) {
         try {
+            const getToken = await this.redisCacheService.get(body.name)
+            console.log(getToken);
+
+
+            if (getToken) {
+                // return cache Token
+                return getToken;
+            }
+
             const player = await this.playerRepository.findOneOrFail({ where: { name: body.name } })
 
             if (!player) {
@@ -66,7 +78,9 @@ export class AuthService {
                 name: player.name,
                 id: player.id
             }
-            return await this.jwtSign(payload)
+            const token = await this.jwtSign(payload)
+            await this.redisCacheService.set(body.name, token)
+            return token
         } catch (error) {
             this.logger.error(error.message)
             throw new HttpException(error.message, HttpStatus.BAD_REQUEST)

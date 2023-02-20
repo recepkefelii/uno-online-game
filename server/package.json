@@ -21,6 +21,7 @@
     "typeorm": "npm run build && npx typeorm -d dist/db/data-source.js"
   },
   "dependencies": {
+    "@liaoliaots/nestjs-redis": "^9.0.5",
     "@nestjs/common": "^9.0.0",
     "@nestjs/config": "^2.3.1",
     "@nestjs/core": "^9.0.0",

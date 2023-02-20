@@ -8,9 +8,12 @@ import { RulesModule } from './rules/rules.module';
 import { GameController } from './game.controller';
 import { RedisModule } from 'nestjs-redis';
 @Module({
-    imports: [TypeOrmModule.forFeature([Game, Player, Card]), RulesModule,RedisModule],
-    providers: [GameService],
-    controllers: [GameController]
+  imports: [TypeOrmModule.forFeature([Game, Player, Card]),
+    RulesModule,
+    RedisModule,
+  ],
+  providers: [GameService],
+  controllers: [GameController]
 })
 export class GameModule {
 

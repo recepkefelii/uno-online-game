@@ -1,103 +1,123 @@
 import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { createGameDto } from './dto/create.game-dto';
 import { joinGameDto } from './dto/join.game-dto';
-import { Game } from '../entities/game.entity';
 import { IGetUserType } from './interface/user.interface';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Player } from 'src/entities/player.entity';
-import { Card } from 'src/entities/card.entity';
-import { Repository } from 'typeorm';
+import Redis from 'ioredis';
+import { v4 as uuidv4 } from 'uuid';
+import { InjectRedis } from '@liaoliaots/nestjs-redis';
+
+type Game = {
+  name: string;
+  players: string[];
+  owner: string;
+  maxPlayers: number;
+  currentPlayers: number;
+  password: string;
+  private: boolean;
+  status: boolean; // boolean olarak tanımlanmış status özelliği
+}
 
 @Injectable()
 export class GameService {
-  logger: Logger
+  private readonly logger: Logger;
+
   constructor(
-    @InjectRepository(Game)
-    public readonly gameRepository: Repository<Game>,
-    @InjectRepository(Player)
-    public readonly playerRepository: Repository<Player>,
-    @InjectRepository(Card)
-    public readonly cardRepository: Repository<Card>,
+    @InjectRedis() private readonly redis: Redis
   ) {
-    this.logger = new Logger(GameService.name)
+    this.logger = new Logger(GameService.name);
   }
 
-  //Create Game Service
   async createGame(body: createGameDto, user: IGetUserType) {
     try {
-      const ownerPlayer = await this.playerRepository.findOneOrFail({ where: { name: user.name } });
-      const game = new Game();
-      game.name = body.name;
-      game.players = [ownerPlayer];
-      game.owner = user.name;
-      game.maxPlayers = body.maxPlayers;
-      game.currentPlayers = 1
+      const gameId = uuidv4();
+      const game: Game = {
+        name: body.name,
+        players: [user.name],
+        owner: user.name,
+        maxPlayers: body.maxPlayers,
+        currentPlayers: 1,
+        password: body.password,
+        private: body.isPrivate,
+        status: false
+      };
 
-      if (body.isPrivate) {
-        game.password = body.password;
+      //Return success for 'OK'
+      const result = await this.redis.hmset(`game:${gameId}`, game);
+
+      if (result !== 'OK') {
+        throw new Error('Failed to create game in Redis');
       }
 
-      const newGame = await this.gameRepository.save(game);
+      this.logger.log(`ID ${gameId} game successfully created`);
+      this.logger.log(`User named ${user.name} successfully entered the room created`);
 
-      this.logger.log(`ID ${newGame.id} game successfully created`);
-      this.logger.log(`User named ${ownerPlayer.name} successfully entered the room created`);
-
-      return newGame;
+      return { id: gameId, ...game };
     } catch (error) {
       this.logger.error(`An error occurred while creating the game: ${error.message}`);
-      throw new HttpException('unsuccessful', HttpStatus.BAD_REQUEST);
+      throw new HttpException('Failed to create game', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
-
-
-
-  //Join Game Service
   async joinGame(body: joinGameDto, user: IGetUserType) {
-    const game = await this.gameRepository.findOneOrFail({
-      where: { id: body.gameId },
-      relations: ['players']
-    });
+    const game: Record<string, string> = await this.redis.hgetall(`game:${body.gameId}`);
 
     if (!game) {
-      throw new HttpException('Game not found', HttpStatus.BAD_REQUEST);
+      throw new HttpException('Game not found', HttpStatus.NOT_FOUND);
     }
 
-    if (game.private && body.password !== game.password) {
-      throw new HttpException('Wrong password', HttpStatus.BAD_REQUEST);
+    const { name, players, status, owner, maxPlayers, currentPlayers, password, isPrivate } = game;
+
+    if (isPrivate && body.password !== password) {
+      console.log(isPrivate, password);
+
+      throw new HttpException('Wrong password', HttpStatus.UNAUTHORIZED);
     }
 
-    const player = await this.playerRepository.findOne({
-      where: { name: user.name }
-    });
-
-    if (!player) {
-      return { error: 'Player not found' };
+    if (+currentPlayers >= +maxPlayers) {
+      throw new HttpException('Game is full', HttpStatus.BAD_REQUEST);
     }
 
-    if (game.currentPlayers >= game.maxPlayers) {
-      return { error: 'Game is full' };
+    const playersArr = players.split(',');
+
+    if (playersArr.includes(user.name)) {
+      return {
+        message: 'Already joined the game',
+        user: {
+          name: user.name,
+          id: user.id
+        }
+      };
     }
 
-    game.players.push(player);
-    game.currentPlayers += 1;
-
-    if (game.maxPlayers === game.currentPlayers) {
-      game.status = true;
-    }
-
-    await this.gameRepository.save(game);
-    this.logger.log(`User named ${player.name} successfully logged into room ${game.name}`);
-
-    return {
-      message: 'Successfully joined game',
-      user: {
-        name: player.name,
-        id: player.id
-      }
+    playersArr.push(user.name);
+    const newGame: Record<string, string | boolean> = {
+      ...game,
+      players: playersArr.join(','),
+      currentPlayers: playersArr.length.toString(),
+      status: maxPlayers === currentPlayers
     };
+
+
+    const result = await this.redis.hmset(`game:${body.gameId}`, newGame);
+
+    if (result !== 'OK') {
+      throw new HttpException('Failed to join the game', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    this.logger.log(`User named ${user.name} successfully logged into room ${newGame.name}`);
+
+    return { ...newGame };
+
   }
+
   async getAllRooms() {
-    return this.gameRepository.find()
+    const keys = await this.redis.keys('game:*');
+    const games = await Promise.all(
+      keys.map(async (key: any) => {
+        const game = await this.redis.hgetall(key);
+        return { id: key.split(':')[1], ...game };
+      })
+    );
+    return games;
   }
 }

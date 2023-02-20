@@ -11,7 +11,7 @@ import { AuthService } from './auth.service';
 @Module({
     imports: [TypeOrmModule.forFeature([Player]), CacheModule.registerAsync<RedisOptions>({
         useFactory: async () => {
-            const store = await redisStore({ ttl: 60 });
+            const store = await redisStore({ ttl: 120 });
             return {
                 store: store as unknown as CacheStore,
                 host: 'localhost',

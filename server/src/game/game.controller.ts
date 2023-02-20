@@ -5,6 +5,7 @@ import { createGameDto } from './dto/create.game-dto';
 import { joinGameDto } from './dto/join.game-dto';
 import { GameService } from './game.service';
 import { IGetUserType } from './interface/user.interface';
+import { IGame } from './interface/game.interface';
 
 @Controller('game')
 export class GameController {
@@ -13,12 +14,12 @@ export class GameController {
     ) { }
     @Post('create')
     @UseGuards(AuthGuard)
-    async createGame(@Body() body: createGameDto, @GetUser() user: IGetUserType) {
+    async createGame(@Body() body: createGameDto, @GetUser() user: IGetUserType): Promise<IGame> {
         return this.gameService.createGame(body, user)
     }
     @Post('join')
     @UseGuards(AuthGuard)
-    async joinGame(@Body() body: joinGameDto, @GetUser() user: IGetUserType) {
+    async joinGame(@Body() body: joinGameDto, @GetUser() user: IGetUserType): Promise<IGame> {
         return this.gameService.joinGame(body, user)
     }
     @Get('get')

@@ -1,11 +1,10 @@
-import { Controller, Post, Body, Get, UseGuards } from '@nestjs/common';
-import { GetUser } from 'src/shared/auth.decorator';
+import { Controller, Post, Body, Get, UseGuards, Req } from '@nestjs/common';
 import { AuthGuard } from 'src/shared/guard/auth.guard';
 import { createGameDto } from './dto/create.game-dto';
 import { joinGameDto } from './dto/join.game-dto';
 import { GameService } from './game.service';
 import { IGetUserType } from './interface/user.interface';
-import { IGame } from './interface/game.interface';
+import { GetUser } from 'src/shared/decorator/auth.decorator';
 
 @Controller('game')
 export class GameController {
@@ -14,12 +13,13 @@ export class GameController {
     ) { }
     @Post('create')
     @UseGuards(AuthGuard)
-    async createGame(@Body() body: createGameDto, @GetUser() user: IGetUserType): Promise<IGame> {
+    async createGame(@Req() req:any,@Body() body: createGameDto, @GetUser() user: IGetUserType){
+        console.log(req);
         return this.gameService.createGame(body, user)
     }
     @Post('join')
     @UseGuards(AuthGuard)
-    async joinGame(@Body() body: joinGameDto, @GetUser() user: IGetUserType): Promise<IGame> {
+    async joinGame(@Body() body: joinGameDto, @GetUser() user: IGetUserType){
         return this.gameService.joinGame(body, user)
     }
     @Get('get')
@@ -29,6 +29,12 @@ export class GameController {
     @UseGuards(AuthGuard)
     @Post('leave')
     async leaveGame() {
-
+        return this
     }
+    // @Post('start')
+    // @UseGuards(AuthGuard)
+    // async start(@Req() request: any, @GetUser() user: IGetUserType) {
+    //     console.log(request);
+    //     return this.gameService.start(user)
+    // }
 }

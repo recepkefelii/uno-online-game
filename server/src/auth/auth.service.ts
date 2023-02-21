@@ -7,7 +7,7 @@ import * as bcrypt from 'bcrypt'
 import { ConfigService } from '@nestjs/config';
 import { Cache as Cache } from 'cache-manager';
 import { IGetUserType } from 'src/game/interface/user.interface';
-import { UpdateDto,AuthDto } from './dto/auth.dto';
+import { UpdateDto, AuthDto } from './dto/auth.dto';
 
 interface IPayload {
     name: string
@@ -56,6 +56,7 @@ export class AuthService {
 
             if (getToken) {
                 // return cache Token
+                console.log(await this.redisCacheService.store.ttl(body.name));
                 return getToken;
             }
 
@@ -79,6 +80,7 @@ export class AuthService {
             }
             const token = await this.jwtSign(payload)
             await this.redisCacheService.set(body.name, token)
+
             return token
         } catch (error) {
             this.logger.error(error.message)

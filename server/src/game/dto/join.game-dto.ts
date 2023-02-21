@@ -2,8 +2,8 @@ import { IsBoolean, IsInt, IsNotEmpty, IsOptional, IsString, Length } from "clas
 
 export class joinGameDto {
     @IsNotEmpty()
-    @IsString()
-    gameId: string
+    @IsInt()
+    gameId: number
 
     @Length(4, 10)
     @IsString()

@@ -1,5 +1,5 @@
 import { Body, Controller, Patch, Post, UseGuards } from '@nestjs/common';
-import { GetUser } from 'src/shared/auth.decorator';
+import { GetUser } from 'src/shared/decorator/auth.decorator';
 import { AuthGuard } from 'src/shared/guard/auth.guard';
 import { AuthService } from './auth.service';
 import { IGetUserType } from 'src/game/interface/user.interface';

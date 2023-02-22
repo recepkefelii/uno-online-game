@@ -100,4 +100,8 @@ export class GameService {
   async getAllRooms() {
     return this.gameRepository.find()
   }
+
+  async leaveGame(){
+    
+  }
 }

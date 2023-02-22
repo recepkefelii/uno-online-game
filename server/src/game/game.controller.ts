@@ -14,7 +14,6 @@ export class GameController {
     @Post('create')
     @UseGuards(AuthGuard)
     async createGame(@Req() req:any,@Body() body: createGameDto, @GetUser() user: IGetUserType){
-        console.log(req);
         return this.gameService.createGame(body, user)
     }
     @Post('join')
@@ -29,7 +28,7 @@ export class GameController {
     @UseGuards(AuthGuard)
     @Post('leave')
     async leaveGame() {
-        return this
+        return this.gameService.leaveGame()
     }
     // @Post('start')
     // @UseGuards(AuthGuard)

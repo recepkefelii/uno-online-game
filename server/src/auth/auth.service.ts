@@ -41,8 +41,10 @@ export class AuthService {
                 name: body.name,
                 id: newPlayer.id
             }
-
-            return this.jwtSign(payload)
+            const token = await this.jwtSign(payload)
+            
+            await this.redisCacheService.set(body.name, token)
+            return token
         } catch (error) {
             this.logger.error(error.message)
             throw new HttpException(error.message, HttpStatus.BAD_REQUEST)
@@ -55,8 +57,6 @@ export class AuthService {
             const getToken = await this.redisCacheService.get(body.name)
 
             if (getToken) {
-                // return cache Token
-                console.log(await this.redisCacheService.store.ttl(body.name));
                 return getToken;
             }
 

@@ -11,7 +11,23 @@ services:
       - POSTGRES_DB=${DB_NAME}
     networks:
       - uno
-
+  backend:
+    build: ./server
+    ports:
+      - 3000:3000
+    environment:
+      - DB_TYPE=${DB_TYPE}
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_USER=${DATABASE_USER}
+      - POSTGRES_PASS=${DATABASE_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_SYNC=false
+      - POSTGRES_PORT=${POSTGRES_PORT}
+    depends_on:
+      - database
+    networks:
+      - uno
+ 
   redis:
     image: redis:latest
     container_name: redis

@@ -1,12 +1,13 @@
-import { Global, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ormConfig } from './config/orm.config';
 import { GameModule } from './game/game.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
-import { RedisModule } from '@liaoliaots/nestjs-redis';
+// import { RedisModule } from '@liaoliaots/nestjs-redis';
 import { SocketModule } from './socket/socket.module';
-import { GameMiddleware } from './shared/middleware/game.middleware';
+import { RulesModule } from './rules/rules.module';
+import { CardModule } from './card/card.module';
 
 @Global()
 @Module({
@@ -14,11 +15,10 @@ import { GameMiddleware } from './shared/middleware/game.middleware';
     isGlobal: true,
     envFilePath: '.env',
   }),
-  SocketModule
+    SocketModule,
+    RulesModule,
+    CardModule,
   ]
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(GameMiddleware).forRoutes('game/create')
-  }
- }
+export class AppModule {
+}

@@ -13,12 +13,12 @@ export class GameController {
     ) { }
     @Post('create')
     @UseGuards(AuthGuard)
-    async createGame(@Req() req:any,@Body() body: createGameDto, @GetUser() user: IGetUserType){
+    async createGame(@Req() req: any, @Body() body: createGameDto, @GetUser() user: IGetUserType) {
         return this.gameService.createGame(body, user)
     }
     @Post('join')
     @UseGuards(AuthGuard)
-    async joinGame(@Body() body: joinGameDto, @GetUser() user: IGetUserType){
+    async joinGame(@Body() body: joinGameDto, @GetUser() user: IGetUserType) {
         return this.gameService.joinGame(body, user)
     }
     @Get('get')

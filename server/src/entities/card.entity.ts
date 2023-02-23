@@ -1,39 +1,38 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 import { Game } from './game.entity';
 import { Player } from './player.entity';
-
+import { CardColor } from 'src/shared/enum/card.color.enum';
+import { CardValue } from 'src/shared/enum/card.value.enum';
 
 @Entity()
 export class Card {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({
-    type: 'boolean',
-    default: false,
-  })
-  isMain: boolean
+  @Column({ default: false })
+  isWild: boolean;
 
-  @Column()
-  color: string;
+  @Column({ default: false })
+  isDrawTwo: boolean;
 
-  @Column()
-  number: number;
+  @Column({ default: false })
+  isReverse: boolean;
 
-  @Column()
-  symbol: string;
+  @Column({ default: false })
+  isSkip: boolean;
 
-  @Column()
-  type: string;
+  @Column({ default: false })
+  isWildDrawFour: boolean;
 
-  @ManyToOne(type => Game, game => game.cards, {
-    onDelete: "CASCADE", orphanedRowAction: 'delete'
-  })
+  @Column({ type: 'enum', enum: CardColor, nullable: true })
+  color: CardColor;
+
+  @Column({ type: 'enum', enum: CardValue, nullable: true })
+  value: CardValue;
+
+  @ManyToOne(() => Game, game => game.cards, { onDelete: 'CASCADE', orphanedRowAction: 'delete' })
   game: Game;
 
-  @ManyToOne(type => Player, player => player.cards,
-    {
-      onDelete: "CASCADE", orphanedRowAction: 'delete'
-    })
+  @ManyToOne(() => Player, player => player.cards, { onDelete: 'CASCADE', orphanedRowAction: 'delete' })
   player: Player;
 }

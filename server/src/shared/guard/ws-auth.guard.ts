@@ -9,7 +9,7 @@ export class WsAuthGuard extends AuthGuard {
             return false;
         }
         const user = this.validateToken(headers.authorization);
-        client.user = user;
+        client['user'] = user;
         return true;
     }
 }

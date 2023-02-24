@@ -9,7 +9,4 @@ export enum CardValue {
     Seven = 'seven',
     Eight = 'eight',
     Nine = 'nine',
-    DrawTwo = 'drawtwo',
-    Reverse = 'reverse',
-    Skip = 'skip',
   }

@@ -32,6 +32,7 @@ export class GameService {
       game.owner = user.name;
       game.maxPlayers = body.maxPlayers;
       game.currentPlayers = 1
+      game.status = false
 
       if (body.isPrivate) {
         game.password = body.password;

@@ -26,16 +26,15 @@ export class SocketGateWay implements OnGatewayConnection, OnGatewayDisconnect {
       if (!gameId) socket.disconnect()
   
       if (!user) {
-        return this.disconnect(socket);
+        return socket.disconnect()
       }
   
       socket.gameId = gameId
       socket.join(gameId.toString())
-      console.log(socket.rooms);
       
   
     } catch (error) {
-      return this.disconnect(socket);
+      socket.disconnect()
     }
   }
   
@@ -45,7 +44,4 @@ export class SocketGateWay implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
 
-  private disconnect(socket: GameSocket) {
-    throw new WsUnauthorizedException('helloo')
-  }
 }

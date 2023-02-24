@@ -12,6 +12,9 @@ export class Card {
   @Column({ default: false })
   isWild: boolean;
 
+  @Column({default: false})
+  isMain: boolean
+
   @Column({ default: false })
   isDrawTwo: boolean;
 

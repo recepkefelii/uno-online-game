@@ -9,6 +9,10 @@ import { WsAuthGuard } from "src/shared/guard/ws-auth.guard";
 import { GameSocket } from "src/socket/game.socket";
 import { RulesService } from "./rules.service";
 
+export type CardId = {
+    id : number
+}
+
 @UseFilters(new WsCatchAllFilter())
 @WebSocketGateway()
 @Injectable()
@@ -23,9 +27,17 @@ export class RulesGateway {
     @SubscribeMessage('start')
     @UseGuards(WsAuthGuard)
     async start(@ConnectedSocket() socket: GameSocket, @UserDecorator() user: IGetUserType) {
-
        const result =  await this.rulesService.start(user,socket.gameId)
-       
        socket.to(socket.gameId.toString()).emit('game_start',result)
+    }
+
+    @SubscribeMessage('move')
+    @UseGuards(WsAuthGuard)
+    async move(
+        @ConnectedSocket() socket:GameSocket, 
+        @UserDecorator() user: IGetUserType,
+        @MessageBody() cardId: CardId
+    ){  
+        await this.rulesService.move(cardId.id,socket.gameId,user)
     }
 }

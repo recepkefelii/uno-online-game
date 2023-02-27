@@ -3,6 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Card } from "src/entities/card.entity";
 import { Game } from "src/entities/game.entity";
 import { Player } from "src/entities/player.entity";
+import { WsBadRequestException } from "src/exception/ws-exceptions";
 import { CardColor } from "src/shared/enum/card.color.enum";
 import { CardValue } from "src/shared/enum/card.value.enum";
 import { Repository } from "typeorm";
@@ -70,5 +71,17 @@ export class CardService {
     card.isMain = true,
       card.game = game
     await this.cardRepository.save(card)
+  }
+
+
+  public async cardControl(card: Card, mainCard: Card) {
+    if (mainCard.color === card.color || mainCard.value === card.value) {
+      card.player = mainCard.player
+      card.game = mainCard.game
+      mainCard = card;
+      return mainCard;
+    } else {
+      throw new WsBadRequestException("This move is against the rules");
+    }
   }
 }

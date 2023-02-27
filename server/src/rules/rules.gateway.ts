@@ -38,6 +38,18 @@ export class RulesGateway {
         @UserDecorator() user: IGetUserType,
         @MessageBody() cardId: CardId
     ){  
-        await this.rulesService.move(cardId.id,socket.gameId,user)
+        const result = await this.rulesService.move(cardId.id,socket.gameId,user)
+        socket.to(socket.gameId.toString()).emit('moves',result)
     }
+
+    @SubscribeMessage('draw')
+    @UseGuards(WsAuthGuard)
+    async drawCard(
+        @ConnectedSocket() socket:GameSocket, 
+        @UserDecorator() user: IGetUserType,
+    ){
+        const result = await this.rulesService.drawCard(socket.gameId,user)
+    }
+
+    
 }

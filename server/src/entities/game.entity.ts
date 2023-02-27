@@ -21,7 +21,7 @@ export class Game {
   owner: string
 
   @Column()
-  maxPlayers: number;
+  maxPlayers: 2 | 3 | 4;
 
   @Column()
   currentPlayers: number;

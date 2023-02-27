@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { createGameDto } from './dto/create.game-dto';
 import { joinGameDto } from './dto/join.game-dto';
 import { Game } from '../entities/game.entity';
@@ -26,6 +26,9 @@ export class GameService {
   async createGame(body: createGameDto, user: IGetUserType) {
     try {
       const ownerPlayer = await this.playerRepository.findOneOrFail({ where: { name: user.name } });
+      if (body.maxPlayers > 4 && body.maxPlayers < 2) {
+        throw new BadRequestException('max players value can be one of 2,3,4')
+      }
       const game = new Game();
       game.name = body.name;
       game.players = [ownerPlayer];
@@ -59,6 +62,10 @@ export class GameService {
       where: { id: body.gameId },
       relations: ['players']
     });
+
+    if (game.status) {
+      throw new HttpException('the game has already started', HttpStatus.NOT_ACCEPTABLE)
+    }
 
     if (!game) {
       throw new HttpException('Game not found', HttpStatus.BAD_REQUEST);
@@ -102,7 +109,7 @@ export class GameService {
     return this.gameRepository.find()
   }
 
-  async leaveGame(){
-    
+  async leaveGame() {
+
   }
 }

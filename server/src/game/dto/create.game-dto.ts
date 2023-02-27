@@ -7,7 +7,7 @@ export class createGameDto {
 
     @IsNotEmpty()
     @IsNumber()
-    maxPlayers: number;
+    maxPlayers: 2 | 3 | 4;
 
     @Length(4, 20)
     @IsString()

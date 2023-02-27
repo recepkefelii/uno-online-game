@@ -54,7 +54,7 @@ export class RulesService {
     }
 
     async move(id: number, gameId: number, user: IGetUserType) {
-        const game = await this.gameRepository.findOneOrFail({ where: { id: gameId }, relations: ["turns", "players", "cards","players.cards"] })
+        const game = await this.gameRepository.findOneOrFail({ where: { id: gameId }, relations: ["turns", "players", "cards", "players.cards"] })
 
         const currentPlayerIndex = game.turns.length % game.players.length
         const currentPlayer = game.players[currentPlayerIndex]
@@ -66,19 +66,16 @@ export class RulesService {
         }
 
         const card = game.cards.find(c => c.id === id)
-
         if (!card) {
             throw new WsBadRequestException('The card is not in the deck')
         }
 
-        console.log(currentPlayer)
         const cardIndex = currentPlayer.cards.findIndex(c => c.id === id)
-        console.log(cardIndex);
-        
-
         if (cardIndex < 0) {
             throw new WsBadRequestException('You do not have this card')
         }
+        const mainCard = game.cards.find(c => c.isMain === true)
+        const checkMainCard = await this.cardService.cardControl(card, mainCard)
 
         currentPlayer.cards.splice(cardIndex, 1)
         await this.playerRepository.save(currentPlayer)
@@ -86,6 +83,7 @@ export class RulesService {
         const turn = new Turn()
         turn.player = currentPlayer
         game.turns.push(turn)
+        await this.turnRepository.save(turn)
         await this.gameRepository.save(game)
 
         if (currentPlayer.cards.length === 0) {
@@ -94,7 +92,12 @@ export class RulesService {
 
             return { winner: currentPlayer }
         }
+        delete currentPlayer.hash
+        delete currentPlayer.cards
+        return { currentPlayer, playedCard: card, mainCard: checkMainCard }
+    }
 
-        return { currentPlayer, playedCard: card }
+    async drawCard(gameId: number, user: IGetUserType){
+
     }
 }

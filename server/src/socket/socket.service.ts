@@ -10,17 +10,21 @@ export class SocketService {
     constructor(
         @InjectRepository(Player)
         private readonly playerRepository: Repository<Player>,
-        private readonly configService:ConfigService
-        ) { }
+        private readonly configService: ConfigService
+    ) { }
 
-    async getUserGameId(name: string): Promise<number> {
+    async getUserGameId(name: string) {
         const player = await this.playerRepository.findOneOrFail({
             where: { name },
             relations: {
                 game: true
             }
-        })        
-        return player.game.id
+        })
+        const data = {
+            id: player.game.id,
+            status: player.game.status
+        }
+        return data
     }
 
 
@@ -30,9 +34,9 @@ export class SocketService {
         const token = auth.split(' ')[1];
         const decoded = this.verifyToken(token);
         return decoded;
-      }
-    
-      verifyToken(token: string) {
+    }
+
+    verifyToken(token: string) {
         return verify(token, this.configService.get('JWT_KEY'));
-      }
+    }
 }

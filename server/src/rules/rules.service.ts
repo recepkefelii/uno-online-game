@@ -9,7 +9,6 @@ import { WsBadRequestException, WsUnauthorizedException, WsUnknownException } fr
 import { WsCatchAllFilter } from "src/exception/ws-filter";
 import { IGetUserType } from "src/game/interface/user.interface";
 import { Repository } from "typeorm";
-import { CardId } from "./rules.gateway";
 
 @UseFilters(new WsCatchAllFilter())
 @Injectable()
@@ -58,7 +57,6 @@ export class RulesService {
 
         const currentPlayerIndex = game.turns.length % game.players.length
         const currentPlayer = game.players[currentPlayerIndex]
-        console.log(currentPlayer.name);
 
 
         if (currentPlayer.name !== user.name) {
@@ -97,7 +95,42 @@ export class RulesService {
         return { currentPlayer, playedCard: card, mainCard: checkMainCard }
     }
 
-    async drawCard(gameId: number, user: IGetUserType){
-
+    async drawCard(id: number, user: IGetUserType) {
+        const player = await this.playerRepository.findOneOrFail({
+            where: { id: user.id },
+            relations: { game: true, cards: true }
+        })
+    
+        const game = player.game
+        const currentPlayerIndex = game.turns.length % game.players.length
+        const currentPlayer = game.players[currentPlayerIndex]
+    
+        if (currentPlayer.name !== user.name) {
+            throw new WsUnauthorizedException('It is not your turn')
+        }
+    
+        const newCard = await this.cardService.createRandomCards(game, player, 1)
+    
+        if (!newCard) {
+            throw new WsBadRequestException('card could not be drawn')
+        }
+    
+        const turn = new Turn()
+        turn.player = currentPlayer
+        game.turns.push(turn)
+        await this.turnRepository.save(turn)
+        await this.gameRepository.save(game)
+    
+        if (player.cards.length === 0) {
+            game.status = false
+            await this.gameRepository.save(game)
+    
+            return { winner: player }
+        }
+    
+        delete currentPlayer.hash
+        delete currentPlayer.cards
+        return { currentPlayer, drawnCard: newCard }
     }
+    
 }

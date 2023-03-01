@@ -26,7 +26,7 @@ export class Game {
   @Column()
   currentPlayers: number;
 
-  @Column({ nullable: true, default: false })
+  @Column({ default: false })
   status: boolean
 
   @OneToMany(type => Player, player => player.game, { cascade: ["remove"] })

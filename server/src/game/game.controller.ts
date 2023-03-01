@@ -11,6 +11,7 @@ export class GameController {
     constructor(
         private readonly gameService: GameService,
     ) { }
+
     @Post('create')
     @UseGuards(AuthGuard)
     async createGame(@Req() req: any, @Body() body: createGameDto, @GetUser() user: IGetUserType) {
@@ -30,10 +31,4 @@ export class GameController {
     async leaveGame() {
         return this.gameService.leaveGame()
     }
-    // @Post('start')
-    // @UseGuards(AuthGuard)
-    // async start(@Req() request: any, @GetUser() user: IGetUserType) {
-    //     console.log(request);
-    //     return this.gameService.start(user)
-    // }
 }

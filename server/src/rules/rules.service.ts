@@ -1,4 +1,4 @@
-import { Injectable, Logger, UseFilters } from "@nestjs/common";
+import { Injectable, Logger, UseFilters, SetMetadata } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { CardService } from "src/card/card.service";
 import { Card } from "src/entities/card.entity";
@@ -37,9 +37,6 @@ export class RulesService {
             throw new WsBadRequestException('There must be at least 2 people in the room');
         }
 
-        if (game.status === true) {
-            throw new WsBadRequestException('Already start the game');
-        }
 
         game.status = true;
         this.gameRepository.save(game);
@@ -53,7 +50,10 @@ export class RulesService {
     }
 
     async move(id: number, gameId: number, user: IGetUserType) {
-        const game = await this.gameRepository.findOneOrFail({ where: { id: gameId }, relations: ["turns", "players", "cards", "players.cards"] })
+        const game = await this.gameRepository.findOneOrFail({
+            where: { id: gameId },
+            relations: ["turns", "players", "cards", "players.cards"]
+        })
 
         const currentPlayerIndex = game.turns.length % game.players.length
         const currentPlayer = game.players[currentPlayerIndex]
@@ -96,41 +96,25 @@ export class RulesService {
     }
 
     async drawCard(id: number, user: IGetUserType) {
-        const player = await this.playerRepository.findOneOrFail({
-            where: { id: user.id },
-            relations: { game: true, cards: true }
+        const game = await this.gameRepository.findOneOrFail({
+            where: { id },
+            relations: { players: true, cards: true, turns: true }
         })
-    
-        const game = player.game
-        const currentPlayerIndex = game.turns.length % game.players.length
-        const currentPlayer = game.players[currentPlayerIndex]
-    
-        if (currentPlayer.name !== user.name) {
-            throw new WsUnauthorizedException('It is not your turn')
+
+
+        const currentPlayer = game.players.find(player => player.id === user.id)
+
+        let card = await this.cardService.createMainCard(game, currentPlayer);
+        delete card.player
+        delete card.game
+
+        const data = {
+            response: { "currentPlayer": user.name, "card": card },
+            info: user
         }
-    
-        const newCard = await this.cardService.createRandomCards(game, player, 1)
-    
-        if (!newCard) {
-            throw new WsBadRequestException('card could not be drawn')
-        }
-    
-        const turn = new Turn()
-        turn.player = currentPlayer
-        game.turns.push(turn)
-        await this.turnRepository.save(turn)
-        await this.gameRepository.save(game)
-    
-        if (player.cards.length === 0) {
-            game.status = false
-            await this.gameRepository.save(game)
-    
-            return { winner: player }
-        }
-    
-        delete currentPlayer.hash
-        delete currentPlayer.cards
-        return { currentPlayer, drawnCard: newCard }
+
+        return data
     }
-    
+
+
 }

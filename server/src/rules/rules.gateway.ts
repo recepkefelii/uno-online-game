@@ -10,7 +10,7 @@ import { GameSocket } from "src/socket/game.socket";
 import { RulesService } from "./rules.service";
 
 export type CardId = {
-    id : number
+    id: number
 }
 
 @UseFilters(new WsCatchAllFilter())
@@ -18,7 +18,7 @@ export type CardId = {
 @Injectable()
 export class RulesGateway {
     constructor(
-    private readonly rulesService: RulesService,
+        private readonly rulesService: RulesService,
 
     ) { }
     @WebSocketServer() server: Server
@@ -27,29 +27,33 @@ export class RulesGateway {
     @SubscribeMessage('start')
     @UseGuards(WsAuthGuard)
     async start(@ConnectedSocket() socket: GameSocket, @UserDecorator() user: IGetUserType) {
-       const result =  await this.rulesService.start(user,socket.gameId)
-       socket.to(socket.gameId.toString()).emit('game_start',result)
+        const result = await this.rulesService.start(user, socket.gameId)
+        console.log(result);
+
+        socket.to(socket.gameId.toString()).emit('game_start', result)
     }
 
     @SubscribeMessage('move')
     @UseGuards(WsAuthGuard)
     async move(
-        @ConnectedSocket() socket:GameSocket, 
+        @ConnectedSocket() socket: GameSocket,
         @UserDecorator() user: IGetUserType,
         @MessageBody() cardId: CardId
-    ){  
-        const result = await this.rulesService.move(cardId.id,socket.gameId,user)
-        socket.to(socket.gameId.toString()).emit('moves',result)
+    ) {
+        const result = await this.rulesService.move(cardId.id, socket.gameId, user)
+        socket.to(socket.gameId.toString()).emit('moves', result)
     }
 
     @SubscribeMessage('draw')
     @UseGuards(WsAuthGuard)
     async drawCard(
-        @ConnectedSocket() socket:GameSocket, 
+        @ConnectedSocket() socket: GameSocket,
         @UserDecorator() user: IGetUserType,
-    ){
-        const result = await this.rulesService.drawCard(socket.gameId,user)
+    ) {
+        const { info, response } = await this.rulesService.drawCard(socket.gameId, user)
+        socket.emit(user.name, response)
+        socket.to(socket.gameId.toString()).emit("card_number", info)
     }
 
-    
+
 }

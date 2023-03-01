@@ -41,11 +41,9 @@ export class CardService {
     return values[Math.floor(Math.random() * values.length)];
   }
 
-  async cardDealind(game:Game) {
-    // create main card game
+  async cardDealind(game: Game) {
     await this.createMainCard(game)
     for (const players of game.players) {
-      // create users cards for game
       await this.createRandomCards(game, players, this.count)
     }
   }
@@ -64,22 +62,24 @@ export class CardService {
     return cards;
   }
 
-  public async createMainCard(game: Game) {
+  public async createMainCard(game: Game, player?: Player): Promise<Card> {
     const card = new Card()
     card.color = this.getRandomColor()
     card.value = this.getRandomValue()
-    card.isMain = true,
-      card.game = game
-    await this.cardRepository.save(card)
+    card.isMain = player ? false : true
+    card.game = game
+    card.player = player ? player : null
+    return await this.cardRepository.save(card)
   }
 
 
   public async cardControl(card: Card, mainCard: Card) {
     if (mainCard.color === card.color || mainCard.value === card.value) {
-      card.player = mainCard.player
-      card.game = mainCard.game
-      mainCard = card;
-      return mainCard;
+      mainCard.color = card.color
+      mainCard.game = card.game
+      mainCard.value = card.value
+      const newCard = this.cardRepository.save(mainCard)
+      return newCard;
     } else {
       throw new WsBadRequestException("This move is against the rules");
     }

@@ -10,7 +10,7 @@ const currentRooms = () => {
     useEffect(() => {
         if (socket) {
             socket.on('onNewGame', (data) => {
-                console.log(data.newGame); // Sadece "newGame" özelliğini konsola yazdırır
+                console.log(data.newGame); 
                 dispatch(setGames([data.newGame]));
             });
 

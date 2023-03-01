@@ -18,22 +18,26 @@ export class SocketGateWay implements OnGatewayConnection, OnGatewayDisconnect {
 
   async handleConnection(socket: GameSocket) {
     try {
+
       const user = this.socketService.validateToken(socket.handshake.headers.authorization) as unknown as IGetUserType
       const gameId = await this.socketService.getUserGameId(user.name)
+      const { id, status } = gameId
 
-      if (!gameId) socket.disconnect()
+
+      if (!id) socket.disconnect()
 
       if (!user) {
+        socket.leave(gameId.toString())
         return socket.disconnect()
       }
-      const { id, status } = gameId
       socket.gameId = id
 
-      if (!status) {
-        socket.disconnect()
-      }
-      socket.join(gameId.toString())
+      // if (status) {
+      //   socket.leave(id.toString())
+      //   socket.disconnect()
+      // }
 
+      socket.join(id.toString())
 
     } catch (error) {
       socket.disconnect()

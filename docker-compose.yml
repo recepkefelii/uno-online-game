@@ -1,10 +1,10 @@
 version: '3.8'
 services:
-  database: 
+  database:
     image: postgres:latest
     container_name: postgres-database
-    ports: 
-    - 5432:5432
+    ports:
+      - 5432:5432
     environment:
       - POSTGRES_USER=${DATABASE_USER}
       - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
@@ -27,7 +27,9 @@ services:
       - database
     networks:
       - uno
- 
+
+networks:
+  uno:
   redis:
     image: redis:latest
     container_name: redis
@@ -35,5 +37,5 @@ services:
     ports:
       - 6379:6379
 
-networks:
-  uno: 
+    networks:
+      uno:

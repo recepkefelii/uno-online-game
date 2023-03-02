@@ -1,5 +1,5 @@
 import { Route, Routes } from 'react-router'
-import Register from './pages/menu/auth/Register'
+import Register from './pages/Menu/auth/Register'
 import Home from './pages/Home'
 
 function App() {

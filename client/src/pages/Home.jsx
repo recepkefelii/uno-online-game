@@ -1,7 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router';
-
 const Home = () => {
   const navigate = useNavigate()
 
@@ -26,7 +25,7 @@ const Home = () => {
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
           >
-            GUIDE
+            GUID
           </motion.button>
           <motion.button
             className="bg-white text-blue1 border-r-8 border-blue2 text-3xl w-80 font-medium py-6 px-12 rounded-xl mt-4"

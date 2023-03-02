@@ -42,7 +42,7 @@ export class AuthService {
                 id: newPlayer.id
             }
             const token = await this.jwtSign(payload)
-            
+
             await this.redisCacheService.set(body.name, token)
             return token
         } catch (error) {
@@ -57,6 +57,8 @@ export class AuthService {
             const getToken = await this.redisCacheService.get(body.name)
 
             if (getToken) {
+                console.log(getToken);
+
                 return getToken;
             }
 

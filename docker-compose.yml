@@ -25,17 +25,24 @@ services:
       - POSTGRES_PORT=${POSTGRES_PORT}
     depends_on:
       - database
+      - redis
+    networks:
+      - uno
+
+  redis:
+    image: redis:latest
+    command: /bin/sh -c "redis-server "
+    container_name: redis
+    env_file:
+      - .env
+    restart: always
+    ports:
+      - 6379:6379
+    volumes:
+      - ./redis/data:/data
     networks:
       - uno
 
 networks:
   uno:
-  redis:
-    image: redis:latest
-    container_name: redis
-    restart: always
-    ports:
-      - 6379:6379
-
-    networks:
-      uno:
+    driver: bridge

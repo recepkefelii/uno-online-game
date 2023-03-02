@@ -8,7 +8,7 @@ Bu endpoint, kullanıcının hesap bilgilerini güncellemek için kullanılır. 
     
 -   Endpoint: `/update`
     
--   Request Body: Bu endpoint, bir `[UpdateDto](https://github.com/recepkefelii/uno-online/blob/development/server/src/auth/dto/auth.dto.ts)` JSON nesnesi alır. Bu nesnenin özellikleri şunlardır:
+-   Request Body: Bu endpoint, bir `UpdateDto` JSON nesnesi alır. Bu nesnenin özellikleri şunlardır:
     
     -   `name`: Yeni kullanıcı adı (string, zorunlu)
     -   `password`: Yeni şifre (string, zorunlu)

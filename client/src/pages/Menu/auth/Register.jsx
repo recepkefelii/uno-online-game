@@ -4,6 +4,7 @@ import Button from '../../../components/common/Button';
 import { NavLink } from 'react-router-dom';
 import * as Yup from 'yup';
 import { useValidation } from '../../../hooks/formik/formik';
+import Spinner from '../../../components/common/Spinner';
 
 const Register = () => {
 

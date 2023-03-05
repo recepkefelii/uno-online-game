@@ -15,7 +15,7 @@ const Rooms = () => {
         setIsOpen(false);
     }
     return (
-        <div className={`h-screen bg-gray-800 flex `}>
+        <div className={`h-screen bg-blue1 flex `}>
             <div className={`w-1/2 flex flex-col m-auto items-center`}>
                 <div className='text-white font-bold text-3xl'>Start Playing Now</div>
 

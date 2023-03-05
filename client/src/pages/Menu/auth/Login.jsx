@@ -68,7 +68,7 @@ const Login = () => {
                 </div>
               </div>
               <div className='flex justify-center items-center'>
-                <Button text={"Login"} type="submit">Submit</Button>
+                <Button classname={"text-"} text={"Login"} type="submit">Submit</Button>
               </div>
               <div className='mt-5'>
                 <NavLink to="/register" className={"hover:text-blue4 hover:underline text-white"}>Don’t have an account yet?</NavLink>

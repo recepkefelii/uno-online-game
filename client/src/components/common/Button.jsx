@@ -1,18 +1,16 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-const Button = ({ text, type, width, onClick }) => {
-  const buttonWidth = width ? width : 'w-56';
-  const style = width ? { width: width } : {};
+const Button = ({ text, type, onClick, classname, style }) => {
 
   return (
     <motion.button
       type={type ? type : null}
-      className={`bg-white text-blue1 h-9 rounded-xl ${buttonWidth}`}
+      className={`bg-white h-9 text-blue1 rounded-xl w-56 ${classname}`}
       style={style}
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.95 }}
-      onClick={onClick} // onClick prop added
+      onClick={onClick}
     >
       {text}
     </motion.button>

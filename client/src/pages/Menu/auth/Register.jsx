@@ -4,6 +4,7 @@ import Button from '../../../components/common/Button';
 import { NavLink } from 'react-router-dom';
 import * as Yup from 'yup';
 import { useValidation } from '../../../hooks/formik/formik';
+import Spinner from '../../../components/common/Spinner';
 
 const Register = () => {
 
@@ -78,6 +79,7 @@ const Register = () => {
                 <div className="ml-3 text-sm">
                   <label className="font-light text-white dark:text-white">I accept the <NavLink className="font-medium text-blue4 hover:underline dark:text-blue2">Terms and Conditions</NavLink></label>
                   {errors.terms && <div className="text-red-500">{errors.terms}</div>}
+                  <Spinner />
                 </div>
               </div>
             </div>

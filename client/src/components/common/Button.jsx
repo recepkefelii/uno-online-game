@@ -1,17 +1,22 @@
-import React from 'react'
+import React from 'react';
 import { motion } from 'framer-motion';
-const Button = ({ text, type }) => {
-    return (
-        <>
-            <motion.button
-                type={type}
-                className='bg-white text-blue1 h-9 w-56 rounded-xl'
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}>{text}
 
-            </motion.button>
-        </>
-    )
-}
+const Button = ({ text, type, width, onClick }) => {
+  const buttonWidth = width ? width : 'w-56';
+  const style = width ? { width: width } : {};
 
-export default Button
+  return (
+    <motion.button
+      type={type ? type : null}
+      className={`bg-white text-blue1 h-9 rounded-xl ${buttonWidth}`}
+      style={style}
+      whileHover={{ scale: 1.1 }}
+      whileTap={{ scale: 0.95 }}
+      onClick={onClick} // onClick prop added
+    >
+      {text}
+    </motion.button>
+  );
+};
+
+export default Button;

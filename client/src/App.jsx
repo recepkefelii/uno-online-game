@@ -1,10 +1,11 @@
 import { Route, Routes } from 'react-router'
-import Register from './pages/Menu/auth/Register'
+import Register from './pages/menu/auth/Register'
 import Home from './pages/Home'
-import Login from './pages/Menu/auth/Login'
-import Rooms from './pages/Menu/rooms/Room'
+import Login from './pages/menu/auth/Login'
+import Rooms from './pages/menu/rooms/Room'
 import Profile from './pages/Profile'
-import Waiting from './pages/Menu/rooms/Waiting'
+import Waiting from './pages/menu/rooms/Waiting'
+import Game from './pages/game/Game'
 
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
       <Route path='/rooms' element={<Rooms />} />
       <Route path='/profile' element={<Profile />} />
       <Route path='/rooms/:gameId' element={<Waiting />} />
+      <Route path='/rooms/:gameId/started' element={<Game />} />
     </Routes>
   )
 }

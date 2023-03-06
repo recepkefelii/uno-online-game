@@ -1,32 +1,41 @@
-# MultiPlayer Uno Game
-UNO is a multi-player card game in which the objective is to be the first player to get rid of all the cards in their hand.
+# Uno Game
+![GitHub commit activity (branch)](https://img.shields.io/github/commit-activity/m/recepkefelii/uno-online/version-1) ![GitHub Repo stars](https://img.shields.io/github/stars/recepkefelii/uno-online?logo=github) ![GitHub forks](https://img.shields.io/github/forks/recepkefelii/uno-online?logo=github) ![GitHub commit activity](https://img.shields.io/github/commit-activity/y/recepkefelii/uno-online?label=commits&logo=github) ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/recepkefelii/uno-online?logo=github)
 
 
-- [Demo](#demo) Coming Soon
-- [Installation](#installation) 
-- [Starting project](#starting-project)
-- [Links](#links) Coming Soon
-- [Contact](#contact)
+# Motivation
+There is hardly any example of a nestjs based uno game, you can stand up the project on your local with docker by following the setup.
 
-## Demo 
-Coming Soon
+### Where are the front-end codes
+You can see the front end by changing the brach
+front-end is no longer being developed
+  
+## Tech Stack
+
+### Backened
+ Docker
+ Nestjs
+ Postgresql
+ Typeorm
+ Redis
+ Socket
+ Eslint
+ TypeScript
+
+### Frontend
+React
+Tailwind
+Styled-Component
+Redux
+Formik
+Material-Tailwind
 
 
-## Installation
+# Project Design
 
-```
-npm install
-```
+### Http
 
-## Starting project
+### Socket
+ 
 
-```
-npm run dev
-```
 
-## Links
 
-- [Github](https://github.com/recepkefelii/multiplayer-uno-game)
-
-## Contact
-You can contact me at recepkefeliii@gmail.com

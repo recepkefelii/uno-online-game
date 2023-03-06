@@ -8,12 +8,19 @@ There is hardly any example of a nestjs based uno game, you can stand up the pro
 ### Where are the front-end codes
 You can see the front end by changing the brach
 front-end is no longer being developed
+
+# Project Design
+
+### Http
+![http](https://github.com/recepkefelii/uno-online/blob/version-1/assets/http.png)
+
+### Socket
+ ![http](https://github.com/recepkefelii/uno-online/blob/version-1/assets/socket.png)
   
 ## Tech Stack
 
 ### Backened
- Docker
- Nestjs
+ Docker  Nestjs
  Postgresql
  Typeorm
  Redis
@@ -30,12 +37,7 @@ Formik
 Material-Tailwind
 
 
-# Project Design
 
-### Http
-
-### Socket
- 
 
 
 

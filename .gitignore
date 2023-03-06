@@ -1,2 +1,3 @@
-server/dist
+dist/
 server/node_modules
+node_modules

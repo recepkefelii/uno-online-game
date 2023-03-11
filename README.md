@@ -4,9 +4,15 @@
 
 # Motivation
 There is hardly any example of a nestjs based uno game, you can stand up the project on your local with docker by following the setup.
+[setup.md](https://github.com/recepkefelii/uno-online/blob/version-1/setup-project.md)
+
+### see documents
+[docs-en](https://github.com/recepkefelii/uno-online/blob/version-1/docs/backend/english/auth/register.docs.md)
+
+[docs-tr](https://github.com/recepkefelii/uno-online/blob/version-1/docs/backend/t%C3%BCrkce/auth/register.docs.md)
 
 ### Where are the front-end codes
-You can see the front end by changing `development` the brach
+You can see the front end by changing [with-clinet-branch](https://github.com/recepkefelii/uno-online/tree/development/) the brach
 front-end is no longer being developed
 
 # Project Design
